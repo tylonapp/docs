@@ -30,6 +30,20 @@
             ]
           },
           {
+            "group": "The screens",
+            "icon": "monitor",
+            "pages": [
+              "screens/inbox",
+              "screens/backlog",
+              "screens/board",
+              "screens/card",
+              "screens/flow",
+              "screens/releases",
+              "screens/docs",
+              "screens/agents"
+            ]
+          },
+          {
             "group": "MCP server",
             "icon": "terminal",
             "pages": [

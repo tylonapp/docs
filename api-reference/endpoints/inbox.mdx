@@ -19,21 +19,33 @@ What is waiting for a person to decide.
   Which product. Optional when the board has one project.
 </ParamField>
 
-Three kinds turn up here:
+Twelve kinds turn up here, and `kind` says which. The list is the product's
+own — these are the labels the screen shows.
 
-<ResponseField name="branch_suggestion" type="kind">
-  A branch created by hand whose name matches the team's convention. Tylon offers the link and only offers it — linking the wrong branch to a card on a guess is worse than not noticing it.
-</ResponseField>
+| `kind` | |
+| --- | --- |
+| `promotion_blocked` | Promotion refused |
+| `branch_suggestion` | Branch created outside Tylon |
+| `branch_deleted` | Linked branch is gone |
+| `pr_merged_outside` | Merged outside Tylon |
+| `pr_closed_outside` | PR closed on the provider |
+| `waiting_stale` | Waiting for a long time |
+| `error_reported` | Broke in production |
+| `connection_broken` | A connection needs reconnecting |
+| `backmerge_open` | A hotfix has not made it back |
+| `agent_gave_up` | An agent could not finish |
+| `proposal_waiting` | An agent offered a change |
+| `agent_stopped_reacting` | An agent stopped answering its pull request |
 
-<ResponseField name="promotion_blocked" type="kind">
-  A card whose move was refused, with the forge's own words: conflicts, red checks, nothing to merge.
-</ResponseField>
+`detail` carries why, in the provider's words when the provider gave them.
 
-<ResponseField name="error_reported" type="kind">
-  Something a monitor grouped in production. It waits here rather than landing on the board — a backlog that fills itself is a backlog nobody reads.
-</ResponseField>
-
-An inbox that is not empty is the honest thing to alert on. It is, by construction, the list of things a machine could not decide.
+<Note>
+  Most of these are **derived**, not stored — they are read from the state
+  they describe, so they go when it does. Only `branch_suggestion`,
+  `branch_deleted` and `error_reported` are rows, and only those can be
+  dismissed; the rest clear themselves when the thing they are about is dealt
+  with.
+</Note>
 
 ## Clearing it
 

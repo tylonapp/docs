@@ -1,0 +1,46 @@
+---
+title: "Releases"
+sidebarTitle: "Releases"
+description: "A group of Tylon cards delivered together. Freezing stops what ships from changing; completing writes a tag and a changelog per repository."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/light/releases.webp" alt="Tylon releases" />
+  <img className="hidden dark:block" src="/images/dark/releases.webp" alt="Tylon releases" />
+</Frame>
+
+Optional, per flow. A team that ships continuously turns releases off and
+never meets this screen.
+
+## What a release is
+
+A group of cards **of one project**, delivered together, with an identity of
+its own. `open` while it is being filled; `completed` once it has shipped —
+and the tags it wrote sit beside it, one per repository: `v1.8.0`, `v2.3.0`,
+`v0.9.4`.
+
+Three different numbers for one delivery, because each repository keeps its
+own versioning. There is no single version for something that spans three of
+them, and inventing one would be a number nobody could act on.
+
+## Freezing
+
+The moment what this ships **stops changing**.
+
+Freezing cuts the branch, so from that second there is an answer to "what is in
+this release" that cannot drift while somebody is testing it. Afterwards a
+card joins only through a **pick** — one card, deliberately — rather than
+whatever happened to be merged since.
+
+<Note>
+  A frozen release is still `open`. Freezing is not a third state: it is a
+  release that has taken a branch of its own, and it completes the same way.
+</Note>
+
+## Completing
+
+Tags and closes it. Each repository gets its own tag and its own release on the
+provider, with a changelog built from the cards that were in it.
+
+That is the last thing that happens to a release, and the first thing the
+[trunk](/api-reference/endpoints/trunk) can be honest about.

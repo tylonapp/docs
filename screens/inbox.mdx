@@ -1,0 +1,63 @@
+---
+title: "The inbox"
+sidebarTitle: "Inbox"
+description: "What Tylon stopped on, and what happened in the repositories without passing through it. A queue of decisions, never a copy of state."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/light/inbox.webp" alt="The Tylon inbox" />
+  <img className="hidden dark:block" src="/images/dark/inbox.webp" alt="The Tylon inbox" />
+</Frame>
+
+The screen's own subtitle says it: *what the system stopped on, and what
+happened in the repositories without passing through here.*
+
+## Why it is not a notification list
+
+Every item is a **decision somebody has to make**. Nothing arrives here to be
+read and acknowledged — it arrives because Tylon could not act safely and
+would not guess.
+
+The items above are all the same shape: a pull request was closed on GitHub
+without merging, and the card still expects it. Tylon will not decide whether
+that was a mistake or a change of plan, so it asks — **Stop expecting this
+pull request** is the answer, given once.
+
+## What turns up
+
+Twelve kinds, and they fall into three groups.
+
+<AccordionGroup>
+  <Accordion title="Tylon stopped">
+    *Promotion refused* — a merge the provider would not do, with its reason.
+  </Accordion>
+
+  <Accordion title="Something happened without us">
+    *Branch created outside Tylon*, *Linked branch is gone*, *Merged outside
+    Tylon*, *PR closed on the provider*, *A connection needs reconnecting*.
+
+    The first of those is the useful one: somebody cut a branch in a terminal
+    whose name matches the team's convention. Tylon **offers** to link it and
+    only offers — attaching the wrong branch to a card on a guess is worse
+    than not noticing it.
+  </Accordion>
+
+  <Accordion title="Something is overdue">
+    *Waiting for a long time*, *A hotfix has not made it back*, *Broke in
+    production*, and the three about agents — one that could not finish, one
+    that offered a change, one that stopped answering its own pull request.
+  </Accordion>
+</AccordionGroup>
+
+## It empties itself
+
+Most of these are **derived**: read from the state they describe rather than
+stored, so they disappear when that state does. Push to the branch and the
+refusal goes; merge the back-merge and the debt goes.
+
+Only three are rows you dismiss — a branch suggestion, a branch that
+disappeared, and an error a monitor grouped.
+
+That is what makes an empty inbox worth trusting, and what makes it the honest
+thing to alert on: it is, by construction, the list of things a machine could
+not decide.
