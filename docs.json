@@ -38,9 +38,13 @@
               "screens/board",
               "screens/card",
               "screens/flow",
+              "screens/trunk",
               "screens/releases",
+              "screens/projects",
               "screens/docs",
-              "screens/agents"
+              "screens/agents",
+              "screens/runs",
+              "screens/settings"
             ]
           },
           {

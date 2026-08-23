@@ -1,0 +1,65 @@
+---
+title: "A run"
+sidebarTitle: "Runs"
+description: "The receipt for one waking of an agent: what woke it, what it cost, what it read, and every line it wrote."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/light/run.webp" alt="An agent run in Tylon" />
+  <img className="hidden dark:block" src="/images/dark/run.webp" alt="An agent run in Tylon" />
+</Frame>
+
+Every waking of an agent is a run, and a run belongs to the card it was about
+— the breadcrumb here is *Board › #144 Apple Pay on the checkout sheet › Otto ·
+succeeded*. It is not a log in another system that happens to mention a card.
+
+## The line under the title
+
+```
+model claude-opus-5   woken by a card is assigned to it   turns 9
+tokens 226,430 (214,803 in, 11,627 out)   from cache 186,440 · 87% of the input
+cost USD 1.84   took 420s
+```
+
+<ResponseField name="woken by">
+  Which trigger fired, in the words the agent's own configuration uses. An
+  agent that started because somebody mentioned it and one that started
+  because its build went red are two different things to be looking at.
+</ResponseField>
+
+<ResponseField name="turns">
+  How many times it went back to the model. A run that took nine turns to
+  write four files read something it did not expect.
+</ResponseField>
+
+<ResponseField name="cost, and what was cached">
+  In money, beside the tokens it came from. *87% of the input from cache* is
+  why the number is what it is, and is the first thing to look at when a run
+  costs more than the last one.
+</ResponseField>
+
+<ResponseField name="took">
+  Wall clock. Long enough to be worth knowing before you wire an agent to a
+  trigger that fires often.
+</ResponseField>
+
+## What it wrote
+
+**Files** on the right is the whole change — `4 changed, +117 −1` — as the
+tree it landed in. Opening one replaces the transcript with the patch, which
+is the same order anybody reviewing a pull request reads in: what was touched,
+then what changed in it.
+
+The transcript is the argument; the diff is the thing being offered.
+
+<Warning>
+  What an agent writes arrives as a **proposal** — a pull request left in
+  draft. A person approves it, and the provider is what enforces that. There
+  is deliberately no endpoint in [the API](/api-reference/introduction) that
+  approves one.
+</Warning>
+
+<Tip>
+  The runs of every agent are listed together on [the agents
+  screen](/screens/agents), where a red ring is one that did not finish.
+</Tip>

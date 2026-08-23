@@ -1,0 +1,62 @@
+---
+title: "The trunk"
+sidebarTitle: "Trunk"
+description: "One line through the month: what landed, what was promised and has not, and the five numbers that say whether the board is moving."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/light/trunk.webp" alt="The Tylon trunk" />
+  <img className="hidden dark:block" src="/images/dark/trunk.webp" alt="The Tylon trunk" />
+</Frame>
+
+The board says what is in flight. The trunk says what actually landed, on
+which day, and it reads a month at a time.
+
+## The line
+
+`HEAD → refs/heads/main` at the top is what the line is: the branch this
+project promotes into, not an abstraction over it.
+
+<ResponseField name="Below the line">
+  A card that reached the last stage of its flow, on the day it got there.
+</ResponseField>
+
+<ResponseField name="Above the line">
+  A card that is promised inside this window and has not gone out. Two of them
+  in the shot, both still on the board — one **In development**, one in
+  **Staging**.
+</ResponseField>
+
+<ResponseField name="Solid, then dashed">
+  Solid where the work is done, dashed where the month has not happened yet.
+  The dash is not a forecast; it is the part of August that is still in front
+  of the team.
+</ResponseField>
+
+The filled square is a **release that closed**. `Wallets, first half` on
+2026-08-15, with the cards it carried listed under *On the trunk* beneath it.
+
+## The five numbers
+
+```
+4 went out        2 promised, not out     28.6 days to land
+1 promotion refused                       0 reverts opened
+```
+
+Each one is a sentence about the same window, and each says how it was
+counted — because a delivery metric nobody can reproduce is a delivery metric
+somebody will argue with.
+
+**28.6 days to land** is the middle card, from the day it left Backlog to the
+day it landed. Read from 4 cards: the ones with no move out of the backlog
+have nothing to date them from, and are left out rather than counted as zero.
+
+**1 promotion refused** is a move the provider would not take. **0 reverts
+opened** is a revert pull request from a card that had already landed — the
+number that says whether what went out stayed out.
+
+<Tip>
+  The arrows at the top right walk back through previous months, and the same
+  window is available to a script at
+  [`GET /v1/trunk`](/api-reference/endpoints/trunk).
+</Tip>
