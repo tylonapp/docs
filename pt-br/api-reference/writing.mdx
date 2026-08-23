@@ -121,8 +121,8 @@ A metade que mais vale automatizar, porque estes são os gestos que uma pipeline
 | --- | --- |
 | Cards | `POST /v1/cards`, `PATCH /v1/cards/{n}`, `DELETE /v1/cards/{n}`, `POST /v1/cards/{n}/comments` |
 | Projetos | `POST`, `PATCH`, `DELETE /v1/projects` — maintainer |
-| Etiquetas | `POST`, `PATCH`, `DELETE /v1/labels` — member |
-| Features | `POST`, `PATCH`, `DELETE /v1/features` — member |
+| Etiquetas | `POST`, `PATCH` — member · `DELETE /v1/labels/{id}` — maintainer |
+| Features | `POST`, `PATCH` — member · `DELETE /v1/features/{id}` — maintainer |
 | Páginas | `POST /v1/docs`, `PATCH`/`DELETE /v1/docs/{slug}` — member |
 | Caixa de entrada | `POST /v1/inbox/{id}/adopt`, `DELETE /v1/inbox/{id}` — member |
 

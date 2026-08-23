@@ -4,11 +4,26 @@ sidebarTitle: "Etiquetas"
 description: "Leia e escreva as etiquetas de um quadro do Tylon."
 ---
 
-Member. As etiquetas são do quadro, compartilhadas entre os projetos dele.
+As etiquetas são do quadro, compartilhadas entre os projetos dele.
 
-## Como ler e escrever
+## Como ler
 
-Member.
+<ParamField path="GET /v1/labels" type="endpoint" />
+
+Todas as etiquetas do quadro, com o id pelo qual um card é alterado.
+
+```json
+[
+  { "id": "85098258082431403", "name": "api", "color": "blue", "taskCount": 10 }
+]
+```
+
+`labelIds` em [`PATCH /v1/cards/{number}`](/pt-br/api-reference/endpoints/cards)
+é o conjunto inteiro, então é daqui que o conjunto vem.
+
+## Como escrever
+
+Member, menos apagar.
 
 <ParamField path="POST /v1/labels" type="endpoint" />
 
@@ -30,4 +45,4 @@ Member.
 <ParamField path="DELETE /v1/labels/{labelId}" type="endpoint" />
 
 Apagar tira a etiqueta de todos os cards de uma vez. `taskCount` é quantos
-seriam.
+seriam — e é por isso que apagar exige **maintainer**, igual na tela.

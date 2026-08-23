@@ -123,8 +123,8 @@ The half most worth automating, because these are the gestures a pipeline has re
 | --- | --- |
 | Cards | `POST /v1/cards`, `PATCH /v1/cards/{n}`, `DELETE /v1/cards/{n}`, `POST /v1/cards/{n}/comments` |
 | Projects | `POST`, `PATCH`, `DELETE /v1/projects` — maintainer |
-| Labels | `POST`, `PATCH`, `DELETE /v1/labels` — member |
-| Features | `POST`, `PATCH`, `DELETE /v1/features` — member |
+| Labels | `POST`, `PATCH` — member · `DELETE /v1/labels/{id}` — maintainer |
+| Features | `POST`, `PATCH` — member · `DELETE /v1/features/{id}` — maintainer |
 | Pages | `POST /v1/docs`, `PATCH`/`DELETE /v1/docs/{slug}` — member |
 | Inbox | `POST /v1/inbox/{id}/adopt`, `DELETE /v1/inbox/{id}` — member |
 

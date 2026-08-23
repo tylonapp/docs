@@ -7,7 +7,35 @@ description: "Leia e escreva as páginas que os agentes do Tylon leem antes de t
 As páginas que os agentes de fato leem antes de tocar em qualquer coisa:
 convenções, o formato de uma migration, do que não chegar perto.
 
-## Como ler e escrever
+## Como ler
+
+<ParamField path="GET /v1/docs" type="endpoint" />
+
+Todas as páginas, como resumo — título, slug, `parentId`, posição. Os corpos
+não vêm: as páginas de um workspace são uma árvore por onde alguém anda, e
+mandar todo corpo para desenhar um menu é um megabyte para responder uma
+pergunta sobre títulos.
+
+<ParamField path="GET /v1/docs/{slug}" type="endpoint" />
+
+Uma página, com o corpo dela, o que aponta para ela, o que ela cita e ninguém
+escreveu, e os cards que a carregam.
+
+```json
+{
+  "title": "A charge that double-posted",
+  "slug": "a-charge-that-double-posted",
+  "body": "The intent was retried…",
+  "backlinks": [],
+  "dangling": ["retry-policy"],
+  "tasks": []
+}
+```
+
+Um slug que ninguém escreveu é `404`. `dangling` é a outra metade disso: os
+links que esta página faz para páginas que ainda não existem.
+
+## Como escrever
 
 Member. Estas são as páginas que os agentes leem antes de trabalhar —
 convenções, o formato de uma migration, no que não mexer.

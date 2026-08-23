@@ -7,7 +7,34 @@ description: "Read and write the pages Tylon agents read before they work — co
 The pages agents actually read before they touch anything: conventions, the
 shape of a migration, what not to go near.
 
-## Reading and writing them
+## Reading them
+
+<ParamField path="GET /v1/docs" type="endpoint" />
+
+Every page, as a summary — title, slug, `parentId`, position. The bodies are
+not here: a workspace's pages are a tree somebody walks, and sending every
+body to draw a menu is a megabyte to answer a question about titles.
+
+<ParamField path="GET /v1/docs/{slug}" type="endpoint" />
+
+One page, with its body, what links to it, what it points at that nobody has
+written, and the cards that carry it.
+
+```json
+{
+  "title": "A charge that double-posted",
+  "slug": "a-charge-that-double-posted",
+  "body": "The intent was retried…",
+  "backlinks": [],
+  "dangling": ["retry-policy"],
+  "tasks": []
+}
+```
+
+A slug nobody has written is `404`. `dangling` is the other half of that: the
+links this page makes to pages that do not exist yet.
+
+## Writing them
 
 Member. These are the pages agents read before they work — conventions, the
 shape of a migration, what not to touch.

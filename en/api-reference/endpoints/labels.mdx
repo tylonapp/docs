@@ -4,11 +4,26 @@ sidebarTitle: "Labels"
 description: "Read and write the labels on a Tylon board."
 ---
 
-Member. Labels are the board's own, shared across its projects.
+Labels are the board's own, shared across its projects.
 
-## Reading and writing them
+## Reading them
 
-Member.
+<ParamField path="GET /v1/labels" type="endpoint" />
+
+Every label on the board, with the id a card is patched with.
+
+```json
+[
+  { "id": "85098258082431403", "name": "api", "color": "blue", "taskCount": 10 }
+]
+```
+
+`labelIds` on [`PATCH /v1/cards/{number}`](/en/api-reference/endpoints/cards)
+is the whole set, so this is where the set comes from.
+
+## Writing them
+
+Member, except deleting.
 
 <ParamField path="POST /v1/labels" type="endpoint" />
 
@@ -30,4 +45,4 @@ Member.
 <ParamField path="DELETE /v1/labels/{labelId}" type="endpoint" />
 
 Deleting takes the label off every card at once. `taskCount` is how many that
-would be.
+would be — which is why it takes **maintainer**, the same as on screen.

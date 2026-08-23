@@ -6,9 +6,21 @@ description: "Leia e escreva as features do Tylon — o agrupamento que acompanh
 
 Uma feature agrupa os cards que entregam uma coisa ao longo do tempo.
 
-## Como ler e escrever
+## Como ler
 
-Member. Uma feature agrupa cards que entregam uma coisa ao longo do tempo.
+<ParamField path="GET /v1/features" type="endpoint" />
+
+<ParamField query="archived" type="string">
+  `1` para incluir as arquivadas. Desligado por padrão: uma feature arquivada é
+  uma que alguém decidiu parar de olhar.
+</ParamField>
+
+O `featureId` de [`PATCH /v1/cards/{number}`](/pt-br/api-reference/endpoints/cards)
+vem daqui.
+
+## Como escrever
+
+Member, menos apagar.
 
 <ParamField path="POST /v1/features" type="endpoint" />
 
@@ -37,3 +49,5 @@ marcou.
 
 <ParamField path="PATCH /v1/features/{featureId}" type="endpoint" />
 <ParamField path="DELETE /v1/features/{featureId}" type="endpoint" />
+
+Apagar exige **maintainer**, igual na tela.

@@ -6,9 +6,21 @@ description: "Read and write Tylon features — the grouping that follows one th
 
 A feature groups the cards that deliver one thing across time.
 
-## Reading and writing them
+## Reading them
 
-Member. A feature groups cards that deliver one thing across time.
+<ParamField path="GET /v1/features" type="endpoint" />
+
+<ParamField query="archived" type="string">
+  `1` to include the archived ones. Off by default: an archived feature is one
+  somebody decided to stop looking at.
+</ParamField>
+
+`featureId` on [`PATCH /v1/cards/{number}`](/en/api-reference/endpoints/cards)
+comes from here.
+
+## Writing them
+
+Member, except deleting.
 
 <ParamField path="POST /v1/features" type="endpoint" />
 
@@ -37,3 +49,5 @@ ticked.
 
 <ParamField path="PATCH /v1/features/{featureId}" type="endpoint" />
 <ParamField path="DELETE /v1/features/{featureId}" type="endpoint" />
+
+Deleting takes **maintainer**, the same as on screen.
