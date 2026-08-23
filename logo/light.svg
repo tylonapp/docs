@@ -1,23 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="99 116 402 95" role="img" aria-label="Tylon">
-  <!--
-    The Tylon wordmark. It says "Tylon", so nothing beside it needs to.
+<!--
+  The Tylon mark: one trunk, three nodes on the ends of what leaves it — a card
+  enters a stage and a branch exists.
 
-    Near-black, for the light theme — the same ink the app writes text in
-    (oklch(0.145 0 0) in apps/web/src/index.css).
+  Dark tile, for the light theme — the ground the app uses there.
 
-    The viewBox is the letters rather than the exported canvas: as drawn, the
-    artwork sat in a box with a third of its height empty, which renders as a
-    logo that came out wrong rather than one that is small.
+  The tile stays rather than the strokes floating free. The artwork is one ink
+  knocked out of a solid shape, and left transparent the thin strokes vanish
+  into whatever is behind them — the same reason `apps/site/src/components/
+  brand-icon.tsx` gives for using the tile.
 
-    Kept in step with apps/web/src/components/brand-mark.tsx, which draws the
-    same paths in `currentColor`. That trick cannot work in a standalone file
-    loaded as an image, so the two themes are two files here — which is why
-    this comment exists: change one and the other is already wrong.
-  -->
-  <g transform="translate(0,327) scale(0.1,-0.1)" fill="#0A0A0A" stroke="none">
-    <path d="M3464 2095 c-229 -50 -374 -229 -374 -461 0 -225 144 -408 362 -459 352 -83 660 184 610 529 -41 279 -308 454 -598 391z m205 -192 c113 -36 186 -142 185 -268 -1 -162 -102 -272 -259 -283 -91 -6 -156 20 -219 88 -135 144 -77 398 106 461 66 23 121 24 187 2z" />
-    <path d="M990 1994 l0 -97 135 5 135 5 0 -364 0 -363 105 0 105 0 0 365 0 366 122 -3 122 -3 113 -189 113 -189 0 -173 0 -174 110 0 109 0 -6 168 -6 167 172 283 c94 156 171 285 171 288 0 2 -51 4 -112 4 l-113 0 -104 -180 c-57 -99 -107 -180 -111 -180 -5 0 -54 81 -110 180 l-101 180 -425 0 -424 0 0 -96z" />
-    <path d="M2546 1996 l-56 -95 0 -360 0 -361 273 0 272 1 51 89 c49 84 51 89 30 94 -11 3 -109 5 -216 4 l-195 -3 0 363 0 362 -52 0 -52 0 -55 -94z" />
-    <path d="M4150 1635 l0 -455 105 0 105 0 2 292 3 292 219 -292 218 -292 104 0 104 0 0 455 0 455 -105 0 -105 0 -2 -291 -3 -292 -219 292 -219 291 -103 0 -104 0 0 -455z" />
+  Redrawn geometry, from apps/site/public/favicon.svg. That file flips itself
+  with `prefers-color-scheme`, which is right for a browser tab and wrong here:
+  the docs theme is a button, not an operating system setting. So the ink is
+  resolved per file, and these two are a pair — change one and the other is
+  already wrong.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="9" fill="#0A0A0A"/>
+
+  <clipPath id="baseline"><rect width="32" height="29.25"/></clipPath>
+
+  <g clip-path="url(#baseline)" fill="none" stroke="#FFFFFF" stroke-width="2.05">
+    <path d="M7.08 11.9 L12.9 18.73 C17.34 23.9 17.76 25.72 17.76 29.25 L17.76 30.25"/>
+    <path d="M20.71 7.05 L12.9 18.73"/>
+    <path d="M24.92 23.35 L19.37 30.02"/>
+  </g>
+
+  <g fill="#0A0A0A" stroke="#FFFFFF" stroke-width="2.05">
+    <circle cx="7.08" cy="11.9" r="3.27"/>
+    <circle cx="20.71" cy="7.05" r="3.27"/>
+    <circle cx="24.92" cy="23.35" r="3.27"/>
   </g>
 </svg>
