@@ -1,0 +1,73 @@
+---
+title: "The credential"
+sidebarTitle: "The credential"
+description: "What a Tylon API credential is and which boards it reaches. The first call to make, and the only one that never asks which board you mean."
+---
+
+The first call anybody makes, and the one that answers "is this wired up
+correctly" without touching any data.
+
+## Reading it
+
+<ParamField path="GET /v1/me" type="endpoint" />
+
+Takes no `X-Tylon-Workspace` header and refuses none — this is where the ids
+for that header come from, so a version of it that demanded one would be a
+door whose key is behind the door.
+
+```bash
+curl https://api.tylon.app/v1/me \
+  -H "Authorization: Bearer $TYLON_SECRET"
+```
+
+```json
+{
+  "clientId": "tyl_id_1yIrdcxW_gkz8XBY",
+  "name": "the deploy script",
+  "scopes": ["read"],
+  "boards": [
+    {
+      "workspaceId": "84415731592203229",
+      "organizationId": "84415731491539931",
+      "role": "viewer"
+    }
+  ],
+  "answering": null
+}
+```
+
+<ResponseField name="clientId" type="string">
+  The public half of the credential. Safe in a log — it is not what
+  authenticates.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  What it was called when it was issued, and what it signs its writes with.
+  A card it creates says `createdBy: the deploy script`.
+</ResponseField>
+
+<ResponseField name="scopes" type="string[]">
+  `read`, or `read` and `write`. Writing with only `read` is `403`.
+</ResponseField>
+
+<ResponseField name="boards" type="object[]">
+  Every board it reaches, with the role it holds on each. This is the listing:
+  `workspaceId` is exactly what the `X-Tylon-Workspace` header accepts, and
+  nothing else is.
+</ResponseField>
+
+<ResponseField name="answering" type="string | null">
+  Which board served the call. Always `null` here, because this route answers
+  with the list rather than out of it.
+</ResponseField>
+
+## What to do with it
+
+<Card title="Choosing a board" icon="compass" href="/api-reference/workspaces">
+  How the ids above go into the header, what happens when you leave it out,
+  and why a name is refused where an id belongs.
+</Card>
+
+<Card title="Writing" icon="pen" href="/api-reference/writing">
+  What the `write` scope and the role in `boards` let this credential do.
+</Card>
