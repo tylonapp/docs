@@ -1,0 +1,54 @@
+---
+title: "Pages"
+sidebarTitle: "Pages"
+description: "Read and write the pages Tylon agents read before they work — conventions, the shape of a migration, what not to touch."
+---
+
+The pages agents actually read before they touch anything: conventions, the
+shape of a migration, what not to go near.
+
+## Reading and writing them
+
+Member. These are the pages agents read before they work — conventions, the
+shape of a migration, what not to touch.
+
+<ParamField path="POST /v1/docs" type="endpoint" />
+
+<ParamField body="title" type="string" required>
+  The slug is derived from it, and follows it if the title changes.
+</ParamField>
+<ParamField body="body" type="string">
+  Markdown. `[[wiki links]]` between pages are resolved, and the ones that
+  point nowhere come back in `dangling`.
+</ParamField>
+<ParamField body="parentId" type="string">
+  Pages nest.
+</ParamField>
+
+```json
+{
+  "id": "84842202777391096",
+  "title": "Branch naming",
+  "slug": "branch-naming",
+  "parentId": null,
+  "position": 0,
+  "body": "Cut from `main`.",
+  "createdBy": "docs capture",
+  "updatedBy": "docs capture",
+  "backlinks": [],
+  "dangling": [],
+  "tasks": []
+}
+```
+
+<ParamField path="PATCH /v1/docs/{slug}" type="endpoint" />
+<ParamField path="DELETE /v1/docs/{slug}" type="endpoint" />
+
+Addressed by slug rather than id, because that is what a link in another page
+carries.
+
+<Note>
+  This is the one place on the write API where automating is obviously right:
+  a convention that already lives in a generator or a lint config should not
+  be transcribed by hand into the place the agents look, where it will drift.
+</Note>

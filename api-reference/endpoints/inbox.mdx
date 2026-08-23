@@ -1,0 +1,51 @@
+---
+title: "Inbox"
+sidebarTitle: "Inbox"
+description: "Read what is waiting for a person in Tylon — branch suggestions, refused promotions, grouped errors — and clear it."
+---
+
+The queue of decisions a machine could not make. It is never a copy of
+state, which is what makes it the honest thing to alert on: an inbox that is
+empty means nothing is waiting on a human.
+
+## What is waiting
+
+<ParamField path="GET /v1/inbox" type="endpoint">
+</ParamField>
+
+What is waiting for a person to decide.
+
+<ParamField query="projectId" type="string">
+  Which product. Optional when the board has one project.
+</ParamField>
+
+Three kinds turn up here:
+
+<ResponseField name="branch_suggestion" type="kind">
+  A branch created by hand whose name matches the team's convention. Tylon offers the link and only offers it — linking the wrong branch to a card on a guess is worse than not noticing it.
+</ResponseField>
+
+<ResponseField name="promotion_blocked" type="kind">
+  A card whose move was refused, with the forge's own words: conflicts, red checks, nothing to merge.
+</ResponseField>
+
+<ResponseField name="error_reported" type="kind">
+  Something a monitor grouped in production. It waits here rather than landing on the board — a backlog that fills itself is a backlog nobody reads.
+</ResponseField>
+
+An inbox that is not empty is the honest thing to alert on. It is, by construction, the list of things a machine could not decide.
+
+## Clearing it
+
+<ParamField path="POST /v1/inbox/{itemId}/adopt" type="endpoint" />
+
+Take a branch somebody cut in a terminal and make it the card's.
+
+<ParamField query="card" type="integer">
+  Which card. Optional — the Inbox already guessed from the naming
+  convention, and this is how you overrule the guess.
+</ParamField>
+
+<ParamField path="DELETE /v1/inbox/{itemId}" type="endpoint" />
+
+Put the item away without acting on it. Both answer `204`.
