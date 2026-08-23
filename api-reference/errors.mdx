@@ -51,7 +51,7 @@ Read `statusCode` to decide what to do and `message` to tell a person why. Never
 </ResponseField>
 
 <ResponseField name="429" type="Too Many Requests">
-  Over 120 requests in a minute. Back off and retry.
+  Over 120 requests in a minute on this credential. Back off and retry — the budget is per credential, so another one is not affected and issuing a second to get around it is not the answer.
 </ResponseField>
 
 <ResponseField name="500" type="Internal Server Error">
