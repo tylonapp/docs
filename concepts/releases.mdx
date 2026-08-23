@@ -35,10 +35,14 @@ What actually went out, and when — and if it was taken back out.
 Not a status somebody typed. Tylon ran the merge, so it knows; the provider says where the commit is. Joining those two is the reading a release page can be honest about.
 
 ```bash
-curl https://api.tylon.app/v1/releases \
+curl "https://api.tylon.app/v1/trunk?from=2026-08-01&to=2026-08-31" \
   -H "Authorization: Bearer $TYLON_SECRET" \
   -H "X-Tylon-Workspace: 84415731592203229"
 ```
+
+<Card title="Trunk" icon="chart-line" href="/api-reference/endpoints/trunk">
+  What went out, what was promised and has not, and how long a card took.
+</Card>
 
 A release with a `frozenAt` is a promise somebody can act on. One still open is not yet.
 

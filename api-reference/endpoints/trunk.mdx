@@ -1,0 +1,71 @@
+---
+title: "Trunk"
+sidebarTitle: "Trunk"
+description: "What actually went out of a Tylon board over a window of days, and what was taken back out. Not a status somebody typed."
+---
+
+What actually shipped, and when — and if it was reverted.
+
+Not a status somebody typed. Tylon ran the merge, so it knows what landed; the
+provider says where the commit is. Joining those two is the reading a release
+page or a dashboard can be honest about, and nothing else has both halves.
+
+## Reading it
+
+<ParamField path="GET /v1/trunk" type="endpoint" />
+
+<ParamField query="from" type="string">
+  `YYYY-MM-DD`. Defaults to thirty days ago.
+</ParamField>
+
+<ParamField query="to" type="string">
+  `YYYY-MM-DD`. Defaults to today.
+</ParamField>
+
+<ParamField query="projectId" type="string">
+  Which product. Optional when the board has one project.
+</ParamField>
+
+Dates only, never a timestamp. A full one would invite you to send your own
+zone and then wonder why a card landed on a different day than the one it
+shipped on.
+
+```bash
+curl "https://api.tylon.app/v1/trunk?from=2026-08-01&to=2026-08-31" \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 84415731592203229"
+```
+
+<ResponseField name="delivered" type="object[]">
+  The cards that reached the end of the flow inside the window.
+</ResponseField>
+
+<ResponseField name="promised" type="object[]">
+  Cards a release said would ship and that have not. The gap between this and
+  `delivered` is the honest version of a status meeting.
+</ResponseField>
+
+<ResponseField name="numbers" type="object">
+  `landed`, `owed`, `refusals`, `reverts`, and `leadTimeDays` — how long a card
+  took to get out, measured rather than estimated.
+</ResponseField>
+
+<ResponseField name="releases" type="object[]">
+  The releases completed in the window, each with what it carried.
+</ResponseField>
+
+## The window has a ceiling
+
+Ninety-two days at a time, the same limit the screen has. Wider is `400`:
+
+```json
+{ "message": "Ask for 92 days or fewer at a time.", "statusCode": 400 }
+```
+
+A request for a decade is a mistake somewhere rather than something to serve
+slowly. So are these:
+
+| | |
+| --- | --- |
+| `?from=2026-08-01&to=2026-07-01` | `The window ends before it starts.` |
+| `?from=yesterday` | `` `from` is a date, as YYYY-MM-DD. `` |

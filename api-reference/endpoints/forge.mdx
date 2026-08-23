@@ -1,0 +1,95 @@
+---
+title: "Checks and reviews"
+sidebarTitle: "Checks and reviews"
+description: "What CI said about a Tylon card's branches and what reviewers left on its pull requests — the two things that happened on the forge rather than here."
+---
+
+The two things you cannot get from your own machine: the build ran on the
+forge, and the reviews were left there.
+
+Both are asked **live** rather than read from what a webhook happened to
+leave, because "is it green *now*" is the question somebody blocking on it has.
+
+## Checks
+
+<ParamField path="GET /v1/cards/{number}/checks" type="endpoint" />
+
+One entry per repository the card has a pull request open in.
+
+```json
+[
+  {
+    "repository": "acme/api",
+    "branchName": "feature/7-rotate-the-signing-key",
+    "runs": [
+      {
+        "id": "4471",
+        "name": "build",
+        "state": "failing",
+        "url": "https://github.com/acme/api/runs/4471",
+        "summary": "2 tests failed",
+        "notes": [
+          {
+            "path": "src/keys.ts",
+            "line": 88,
+            "level": "failure",
+            "message": "expected the old key to be revoked"
+          }
+        ]
+      }
+    ],
+    "error": null
+  }
+]
+```
+
+<ResponseField name="notes" type="object[]">
+  The file and line a failing check pointed at — the useful part of a red
+  build. Gathered only for failing runs, and capped at twenty: a build that
+  failed five hundred times is not five hundred things to read.
+</ResponseField>
+
+## Reviews
+
+<ParamField path="GET /v1/cards/{number}/reviews" type="endpoint" />
+
+```json
+[
+  {
+    "repository": "acme/api",
+    "prNumber": 412,
+    "reviews": [
+      { "author": "marina", "state": "changes_requested", "body": "The key is still logged." }
+    ],
+    "error": null
+  }
+]
+```
+
+## When one repository cannot be asked
+
+A card can touch three repositories where one connection has lapsed. That one
+comes back carrying its reason; the other two still answer.
+
+```json
+[
+  { "repository": "acme/api", "runs": [], "error": null },
+  { "repository": "acme/legacy", "runs": null, "error": "Not Found" }
+]
+```
+
+<Warning>
+  `runs: null` with an `error` is **not** the same as `runs: []`. The first is
+  the forge not answering; the second is the forge saying nothing is running.
+  Treating them alike is how a dashboard reports a green build that nobody
+  ever ran.
+</Warning>
+
+A caller handed a single `500` for the whole set would learn nothing about
+either repository, which is why the failure is per entry.
+
+## A card with nothing open
+
+An empty list, not a `404`. The card exists and no pull request has been
+opened on it — which is an answer, and a different one from "no such card",
+which is still `404`.
