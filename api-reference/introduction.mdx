@@ -1,0 +1,55 @@
+---
+title: "tylon REST API Reference"
+sidebarTitle: "Introduction"
+description: "Complete reference for the tylon REST API. Base URL, versioning, request format, authentication, pagination, and response structure."
+---
+
+```text
+https://api.tylon.app/v1
+```
+
+Every request carries a credential in an `Authorization` header, answers with JSON, and says what happened with an HTTP status code.
+
+## What it does today
+
+**It reads and it writes.** Reads need nothing beyond the credential. Writes need the `write` scope and an `Idempotency-Key` — moving a card runs Git, and a retry that cannot tell "it failed" from "the answer got lost" must not be able to merge twice. See [Writing](/api-reference/writing).
+
+Two writes are deliberately absent: approving an agent's proposal, and handing out access to a board. Both belong to a person with a session, for reasons that page explains.
+
+## The shape of a call
+
+```bash
+curl "https://api.tylon.app/v1/board?projectId=83729280726599954" \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 84415731592203229"
+```
+
+<ResponseField name="Authorization" type="header" required>
+  `Bearer` followed by the secret, which starts with `tyl_sk_`. See [Authentication](/api-reference/authentication).
+</ResponseField>
+
+<ResponseField name="X-Tylon-Workspace" type="header">
+  The id of the board the call is about. Optional when the credential reaches one. See [Choosing a board](/api-reference/workspaces).
+</ResponseField>
+
+<ResponseField name="projectId" type="query">
+  Which product inside that board. Optional when the board has one project, required when it has several — the board's columns belong to a project, so "the board of the whole team" is not a thing that can be drawn.
+</ResponseField>
+
+## Everything is addressed by id
+
+Ids are **strings**, not numbers. They are 64-bit values, and a JSON parser that reads them as numbers loses the low digits silently — so they are sent quoted, and should stay quoted on the way back.
+
+There is no slug or name anywhere in the request. A name is a thing somebody renames on a Tuesday and a slug is a thing two organizations can share; either would let an integration go quietly wrong. `/v1/me` is where the ids come from.
+
+Card numbers are the exception and are plain integers, because they are per-board counters rather than ids: `#7` on one board and `#7` on another are different cards, and a credential only ever reaches its own.
+
+## Rate limit
+
+120 requests per minute, per caller. Over it, `429`.
+
+There is no per-plan tier. If you need more for something real, say so rather than spreading calls across credentials — the limit is a guard against runaways, not a lever.
+
+## Versioning
+
+The path carries the version. `/v1` will not change shape under you: new fields may appear, and anything that would break a reader gets a new version rather than a quiet edit.

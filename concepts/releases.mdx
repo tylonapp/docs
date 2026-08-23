@@ -1,0 +1,49 @@
+---
+title: "Releases, freezing and the trunk"
+sidebarTitle: "Releases and trunk"
+description: "A Tylon release groups cards of one project. Freezing cuts the branch and stops what ships from changing; the trunk says what actually went out."
+---
+
+Releases are **optional**, per flow. A team that ships continuously turns them off and never meets any of this.
+
+## A release
+
+A group of cards of one project, delivered together, with an identity of its own: a name, a scope, a date. On completion each repository involved gets its own tag and its own release on the provider — because each repository keeps its own versioning.
+
+## Freezing
+
+The moment what a release ships **stops changing**.
+
+Freezing cuts the branch, so from that second there is an answer to "what is in this release" that cannot drift while somebody is testing it. Afterwards, a card joins only through a **pick** — a deliberate act, one card at a time, rather than whatever happened to be merged since.
+
+<Note>
+  This is a fact only Tylon has. GitHub has the branch and not the release; a board has the release and not the branch. The thing that cut the branch is the thing that knows what was on it at that second.
+</Note>
+
+## A hotfix, and what it owes
+
+Some fixes cannot wait for the queue. A hotfix is cut from the far end of the flow instead of the near one and reaches production directly.
+
+Skipping the flow is Git's to do. What is **ours** is knowing the fix is not on the branch the next release will be cut from — so the card carries a debt: a back-merge, opened as a pull request, until the fix is where the next release will find it.
+
+Without that, the most urgent change your team ever shipped is the one most likely to disappear in the next release.
+
+## The trunk
+
+What actually went out, and when — and if it was taken back out.
+
+Not a status somebody typed. Tylon ran the merge, so it knows; the provider says where the commit is. Joining those two is the reading a release page can be honest about.
+
+```bash
+curl https://api.tylon.app/v1/releases \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 84415731592203229"
+```
+
+A release with a `frozenAt` is a promise somebody can act on. One still open is not yet.
+
+## Where a person is still needed
+
+The **inbox** is the queue of decisions a machine could not make: a branch created by hand that looks like it belongs to a card, a promotion the provider refused, an error a monitor grouped in production.
+
+It is never a copy of state. If the inbox is empty, nothing is waiting on a human — which makes it the honest thing to alert on.

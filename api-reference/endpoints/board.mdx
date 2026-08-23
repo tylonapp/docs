@@ -1,0 +1,90 @@
+---
+title: "Board and backlog"
+sidebarTitle: "Board and backlog"
+description: "Read a Tylon board column by column, the backlog behind it, and the projects a credential can see."
+---
+
+## The credential
+
+<ParamField path="GET /v1/me" type="endpoint">
+</ParamField>
+
+What this credential is and which boards it reaches, by id. The one call that never asks you to choose one, and where the ids for the `X-Tylon-Workspace` header come from — see [Choosing a board](/api-reference/workspaces).
+
+## Projects
+
+<ParamField path="GET /v1/projects" type="endpoint">
+</ParamField>
+
+The products inside a board. A board's columns belong to a project, so this is what you read to find the `projectId` the other calls want.
+
+```json
+[
+  {
+    "id": "83729280726599954",
+    "name": "Checkout",
+    "slug": "checkout",
+    "description": "",
+    "repositoryCount": 3,
+    "taskCount": 12,
+    "createdAt": "2026-08-20T01:10:16.135Z"
+  }
+]
+```
+
+## The board
+
+<ParamField path="GET /v1/board" type="endpoint">
+</ParamField>
+
+Every stage of the flow with the cards standing in it, in order.
+
+<ParamField query="projectId" type="string">
+  Which product. Optional when the board has one; `400` when it has several.
+</ParamField>
+
+The columns are the flow's stages, and each one is a real branch rule — which is why a card sitting in a column is a statement about the repository rather than a status somebody typed.
+
+```json
+{
+  "columns": [
+    {
+      "statusId": "83729308086044949",
+      "name": "In development",
+      "kind": "stage",
+      "minRole": "member",
+      "tasks": [
+        {
+          "id": "84812280205807556",
+          "number": 7,
+          "title": "Invert the log order",
+          "projectId": "83729280726599954",
+          "statusId": "83729308086044949",
+          "priority": "medium",
+          "assignee": null,
+          "labels": []
+        }
+      ]
+    }
+  ]
+}
+```
+
+`minRole` on a column is what it takes to move a card **into** it, and `statusId` is what a move is addressed by — the two things a script needs before it can promote anything.
+
+<Note>
+  `blocked` on a card means its last promotion was refused — the branch had conflicts, the checks were red, there was nothing to merge. The reason is on the card itself.
+</Note>
+
+## The backlog
+
+<ParamField path="GET /v1/backlog" type="endpoint">
+</ParamField>
+
+Drafts: a title, a description, a discussion, and no Git at all. Nothing here has a branch, because starting a card is the deliberate act that cuts one.
+
+<ParamField query="projectId" type="string">
+  Same rule as the board.
+</ParamField>
+
+Answers with an array of cards in the same shape `/v1/cards/{number}` uses.

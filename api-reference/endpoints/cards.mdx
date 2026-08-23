@@ -1,0 +1,74 @@
+---
+title: "Cards"
+sidebarTitle: "Cards"
+description: "Read one Tylon card in full — its stage, repositories, branches and pull requests — and the story of everything that happened to it."
+---
+
+## One card
+
+<ParamField path="GET /v1/cards/{number}" type="endpoint">
+</ParamField>
+
+<ParamField path="number" type="integer" required>
+  The card number, as the board shows it. Counted per board — `#7` exists on every board, and you get the one on the board you named.
+</ParamField>
+
+```json
+{
+  "number": 7,
+  "title": "Invert the log order",
+  "description": "The log shows oldest first…",
+  "status": { "name": "In Review", "position": 2 },
+  "priority": "medium",
+  "assignee": null,
+  "blocked": null,
+  "repositories": [
+    {
+      "fullName": "tylonapp/tylon",
+      "branchName": "feature/7-invert-the-log-order",
+      "prNumber": 12,
+      "prState": "draft",
+      "checksState": "passing"
+    }
+  ]
+}
+```
+
+The `repositories` array is the part nothing else has: the branch this card owns in each repository, the pull request it opened, and what the forge says about the checks. That is the join between a board and a repository, and it is why a card can be asked whether it is able to move before anybody drags it.
+
+<ResponseField name="blocked" type="object | null">
+  Present when the last promotion was refused, with the reason in the forge's own words — conflicts, red checks, nothing to merge. `null` when the card is free to move.
+</ResponseField>
+
+<ResponseField name="checksState" type="string | null">
+  What CI said, per repository: `passing`, `failing`, `pending`, or `null` when nothing has reported. This ran on the forge, not here.
+</ResponseField>
+
+## The story
+
+<ParamField path="GET /v1/cards/{number}/timeline" type="endpoint">
+</ParamField>
+
+Everything that happened to the card, with the discussion woven in — comments, moves, branches cut, pushes, pull requests, what agents did.
+
+**Oldest first.** The app shows it newest-first because what somebody opens a card for is what just happened; the API sends it in the order it was recorded, which is the order anybody building a log of their own wants.
+
+```json
+[
+  {
+    "type": "event",
+    "kind": "BRANCH_CREATED",
+    "actor": { "user": { "name": "Marina Duarte" } },
+    "data": { "branchName": "feature/7-invert-the-log-order" },
+    "at": "2026-08-22T19:40:11.004Z"
+  },
+  {
+    "type": "comment",
+    "body": "Shipping this with the release on Friday.",
+    "author": { "user": { "name": "Marina Duarte" } },
+    "at": "2026-08-22T19:52:03.221Z"
+  }
+]
+```
+
+Every item has a `type` of `event` or `comment` and an `at`. Read `kind` to decide what an event was; treat an unfamiliar `kind` as something to skip rather than something to fail on — new ones get added.

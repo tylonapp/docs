@@ -1,0 +1,116 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Tylon",
+  "colors": {
+    "primary": "#16A34A",
+    "light": "#07C983",
+    "dark": "#15803D"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "pages": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "index",
+          "quickstart"
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Documentation",
+          "href": "https://mintlify.com/docs",
+          "icon": "book-open-cover"
+        },
+        {
+          "anchor": "Blog",
+          "href": "https://mintlify.com/blog",
+          "icon": "newspaper"
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "index",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Core concepts",
+            "icon": "book-open",
+            "pages": [
+              "concepts/cards",
+              "concepts/flow",
+              "concepts/releases"
+            ]
+          },
+          {
+            "group": "MCP server",
+            "icon": "terminal",
+            "pages": [
+              "mcp/connect",
+              "mcp/tools"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference/introduction",
+              "api-reference/authentication",
+              "api-reference/workspaces",
+              "api-reference/writing",
+              "api-reference/errors",
+              "api-reference/rate-limits"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "icon": "list",
+            "pages": [
+              "api-reference/endpoints/board",
+              "api-reference/endpoints/cards",
+              "api-reference/endpoints/releases"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Open Tylon",
+      "href": "https://dash.tylon.app"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "description": "Tylon is Git's control panel: a board whose columns are real branches. Documentation for the public API and the MCP server."
+}

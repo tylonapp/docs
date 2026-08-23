@@ -1,0 +1,143 @@
+---
+title: "Writing"
+sidebarTitle: "Writing"
+description: "The Tylon API writes with the write scope and a required Idempotency-Key, so a retried request cannot run Git twice. What the credential signs, and what it is not allowed to do."
+---
+
+Anything that is not a `GET` needs two things beyond the credential: the `write` scope, and an `Idempotency-Key`.
+
+```bash
+curl -X POST https://api.tylon.app/v1/cards \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 84415731592203229" \
+  -H "Idempotency-Key: deploy-2026-08-22-run-4471" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Rotate the signing key"}'
+```
+
+## The key is required, not offered
+
+Moving a card runs Git. A client whose request timed out cannot tell "it failed" from "the answer got lost" — and the only way to find out is to ask again, which is exactly the thing that is not safe to do when asking again might merge a second time.
+
+An optional guard against a silent double merge is a guard the one caller who needed it did not use. So it is required on every write, including the ones that touch no repository, because a rule you have to remember when it matters is a rule you will not remember when it matters.
+
+<ResponseField name="Idempotency-Key" type="header" required>
+  Any string of 16 to 255 characters, from `A-Z a-z 0-9 _ . : -`. Make it unique per attempt-you-mean: a run id, a job id, a hash of the thing that caused the write. Not a timestamp you regenerate on retry — that defeats it.
+</ResponseField>
+
+### What each answer means
+
+<Steps>
+  <Step title="First time: it runs">
+    The answer is stored under the key.
+  </Step>
+  <Step title="Same key, same request: it replays">
+    You get the first answer back, with `Idempotent-Replay: true`, and nothing runs. This is the case the whole mechanism exists for.
+  </Step>
+  <Step title="Same key, different request: 409">
+    A key used for two different requests is a bug in your code, and serving the other request's answer would hide it behind a success.
+  </Step>
+  <Step title="Same key while the first is still running: 409">
+    Wait for it. Running both would be the double merge with extra steps.
+  </Step>
+</Steps>
+
+<Note>
+  A failed attempt **releases** its key. If a write is rejected for a bad field, fix the field and send it again on the same key — you should not have to invent a new one to correct a typo.
+</Note>
+
+Keys are kept for 24 hours, and are scoped to your credential: two integrations both choosing `nightly` are not the same request.
+
+## The credential signs what it does
+
+A write credential is a **member** of the boards it reaches — it has a user of its own, the same way an agent does. So the card it creates says `createdBy: the deploy script`, its timeline reads `status_changed → the
+deploy script`, and a comment it posts is its own.
+
+That is the point of it. A board whose history says _somebody_ moved a card is a board that cannot answer the only question worth asking after something goes wrong.
+
+## What it may do
+
+Two gates, and they answer different questions.
+
+<ResponseField name="scope" type="403">
+  A credential issued for reading only is told so: `This credential was issued for reading only. Issue one with the write scope.`
+</ResponseField>
+
+<ResponseField name="role" type="403">
+  Per route, against the role this credential holds on the board in the header: `That needs the member role or higher, and this credential holds
+  viewer on workspace 83729280714017040.`
+</ResponseField>
+
+Roles are the product's own, so they mean here what they mean on screen. Creating a card or a label is a member's; deleting a project, freezing a release and completing one are a maintainer's.
+
+## Moving a card
+
+The write that runs Git, and the one to read carefully.
+
+```bash
+curl -X POST https://api.tylon.app/v1/cards/7/move \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 84415731592203229" \
+  -H "Idempotency-Key: ci-run-88213" \
+  -H "Content-Type: application/json" \
+  -d '{"statusId": "83729308086044949", "index": 0}'
+```
+
+```json
+{
+  "task": { "number": 7, "statusId": "83729308086044949", "blocked": null },
+  "promoted": [
+    { "fullName": "acme/api", "targetBranch": "main", "prNumber": 412 }
+  ]
+}
+```
+
+Two facts, not one: the card moved, **and** these repositories merged. A caller acting on the second should not have to infer it from the first.
+
+<Warning>
+  A refused promotion is **409**, not 400. The request was fine and the world said no — conflicts, red checks, nothing to merge. The card stays exactly where it was, carrying the reason, and the message is the forge's own words.
+</Warning>
+
+`statusId` comes from `/v1/board`, where each column carries its own id and the `minRole` it takes to move into it.
+
+## Releases
+
+The half most worth automating, because these are the gestures a pipeline has reason to run on a schedule rather than by hand.
+
+|  |  |
+| --- | --- |
+| `POST /v1/releases` | member |
+| `PUT /v1/releases/{id}/cards` | member — the whole list, not additions |
+| `POST /v1/releases/{id}/freeze` | maintainer — cuts the branch |
+| `DELETE /v1/releases/{id}/freeze` | maintainer |
+| `POST /v1/releases/{id}/pick` | member — the only door into a frozen release |
+| `POST /v1/releases/{id}/promote` | member |
+| `POST /v1/releases/{id}/complete` | maintainer — writes the tags |
+| `DELETE /v1/releases/{id}` | maintainer |
+
+`promote` answers with an outcome rather than failing: a release of twelve cards where nine moved and three were refused is news, not an error. The refusals are in the body, each naming its card and the repository that said no.
+
+## The rest
+
+|  |  |
+| --- | --- |
+| Cards | `POST /v1/cards`, `PATCH /v1/cards/{n}`, `DELETE /v1/cards/{n}`, `POST /v1/cards/{n}/comments` |
+| Projects | `POST`, `PATCH`, `DELETE /v1/projects` — maintainer |
+| Labels | `POST`, `PATCH`, `DELETE /v1/labels` — member |
+| Features | `POST`, `PATCH`, `DELETE /v1/features` — member |
+| Pages | `POST /v1/docs`, `PATCH`/`DELETE /v1/docs/{slug}` — member |
+| Inbox | `POST /v1/inbox/{id}/adopt`, `DELETE /v1/inbox/{id}` — member |
+
+## What a credential cannot do
+
+Two writes exist in the product and are deliberately not on this API.
+
+<ResponseField name="Approving an agent's proposal">
+  A proposal waits precisely because a person should look at it, and the provider is what enforces that. A credential that could approve one would be a way to route around the review by writing a script.
+</ResponseField>
+
+<ResponseField name="Inviting members and changing their roles">
+  Handing out access to a board is the act every other permission rests on. A credential that can grant access is one whose own revocation no longer bounds what it did.
+</ResponseField>
+
+Both stay with a person and a session.

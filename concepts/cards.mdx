@@ -1,0 +1,49 @@
+---
+title: "Cards, boards and projects"
+sidebarTitle: "Cards and boards"
+description: "What a card is in Tylon, the difference between a draft in the backlog and one in flight, and why one card can own branches in several repositories at once."
+---
+
+## The card
+
+A card is the unit of work, and the place a product manager and a developer talk about it. It has a number, and that number is counted **per board** — `#7` exists on every board, and they are different cards.
+
+What makes it a Tylon card rather than a row in a list is what it owns: the branch cut for it, the pull request opened from that branch, and what CI said about them. A card can be asked whether it is able to move before anybody drags it.
+
+## Draft, then in flight
+
+<Steps>
+  <Step title="In the backlog, it is a draft">
+    A title, a description, a discussion. **Nothing here touches Git.** The backlog grows without bound and is worked as a list — reorder it, search it, pick from it.
+  </Step>
+  <Step title="Starting it is a deliberate act">
+    Moving a card out of the backlog is what cuts the branch. That is why it is a move and not a checkbox: it asks which repositories the card touches, because that answer decides what gets created.
+  </Step>
+  <Step title="Now it is on the board">
+    The board shows work **in flight** — the flow's stages, without the backlog behind them.
+  </Step>
+</Steps>
+
+## One card, several repositories
+
+A feature that touches the web app and the API is **one delivery or it is not a delivery**. So one card links to several repositories, and gets a branch and a draft pull request in each.
+
+They travel in lockstep. Moving the card promotes every repository it touches, and if one refuses — conflicts, red checks — the card does not half-move: it is blocked, and the block names which repository said no and what already landed in the others.
+
+<Note>
+  This is the thing no board and no repository host can do alone. GitHub knows each branch; the board knows the intent; only the thing that ran the merge knows they were one act.
+</Note>
+
+## Where a card lives
+
+|  |  |
+| --- | --- |
+| **Workspace** | The team's isolation unit. Holds the members, the Git connections and the projects. |
+| **Project** | A product the team ships — `Checkout`, `Mobile app`. It owns its flow, the repositories it is built from, and its releases. |
+| **Card** | Belongs to exactly one project, and may only touch that project's repositories. |
+
+A card is required to have a project, which is why the API asks for a `projectId` on a board that holds more than one: the columns belong to a project, so "the board of the whole team" is not a thing that can be drawn.
+
+## People who do not write code
+
+A viewer is a first-class reader here. The point of the product is that somebody who never opens a terminal can see the branch, the diff, the failing check and the reason a card refused to move — without being told to go and open GitHub.

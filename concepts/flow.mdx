@@ -1,0 +1,65 @@
+---
+title: "The flow: columns that are branches"
+sidebarTitle: "The flow"
+description: "A Tylon flow says where each stage cuts its branch from and where it merges to. Moving a card runs that, and a refusal is the card refusing to lie."
+---
+
+The flow is configured once, per project, and applied the same way every time. It is what makes moving a card deterministic enough to automate.
+
+## Stages
+
+The board's columns are the flow's **stages**, in order. Each one carries:
+
+<ResponseField name="branch rules" type="per repository">
+  Where a branch is cut **from** when a card enters this stage, and where it merges **into**. This is the whole engine — a column is not a label, it is a base and a target.
+</ResponseField>
+
+<ResponseField name="minimum role">
+  Who may move a card **into** this stage. Promoting to production is not the same permission as starting work.
+</ResponseField>
+
+The branch name comes from a template — `feature/{{number}}-{{title}}` by default. It matters more than it looks: the board recognises branches by that convention, and one named anything else never reaches the card it was for.
+
+## Moving a card runs Git
+
+Depending on where the card lands, the move **cuts** a branch, **opens** a pull request, or **merges** one. The same gesture on screen, three different things underneath, decided by the flow rather than by the person doing it.
+
+<Warning>
+  Moving a card backwards is not cosmetic. What was merged has to come back out first, so Tylon opens the revert as a pull request and the card waits where it is until that lands.
+</Warning>
+
+## When it refuses
+
+Tylon never forces. If it cannot act safely it stops and says why, in the forge's own words: the branch has conflicts, the checks are failing, there is nothing to merge.
+
+A card in that state is **blocked**, and the block names the repository that refused. On a card touching three repositories it also names what already landed in the other two — two facts, not one sentence somebody has to take apart.
+
+The block clears when the world changes under it: a push to the card's branch, a pull request opening, the forge saying the branch merges again.
+
+<Note>
+  Whether a red check blocks a promotion is a setting — `requireGreenChecks`, off by default. A team whose repositories run no checks at all would otherwise never move a card.
+</Note>
+
+## Who runs Git from the second stage onwards
+
+Three modes, and the trade is the choice.
+
+<AccordionGroup>
+  <Accordion title="By card — the default">
+    Every promotion is that card's own pull request, at every stage. Simple, and each card is independent of the others.
+  </Accordion>
+
+  <Accordion title="By release branch">
+    The release merges one stage's branch into the next, as a whole. Fastest to operate, and it carries whatever else is on that branch — which is the trade it sells.
+  </Accordion>
+
+  <Accordion title="By release cards">
+    The release promotes its cards, each through its own pull request. The release is still the unit of intent; the merges stay per card.
+  </Accordion>
+</AccordionGroup>
+
+## What stays with the forge
+
+Code review, branch protection and CI. Tylon orchestrates above them and never underneath: it reads what the checks said and refuses the card, rather than running checks of its own or arguing with a protected branch.
+
+Each repository also keeps its own identity — merge method and versioning are per project. A team shipping a library and a service has every reason to squash one and merge the other.

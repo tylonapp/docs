@@ -1,0 +1,61 @@
+---
+title: "Releases and inbox"
+sidebarTitle: "Releases and inbox"
+description: "Read what a Tylon release ships and what is waiting for a person in the inbox — branch suggestions, refused promotions, grouped errors."
+---
+
+## Releases
+
+<ParamField path="GET /v1/releases" type="endpoint">
+</ParamField>
+
+The releases of a product, open and completed.
+
+<ParamField query="projectId" type="string">
+  Which product. Optional when the board has one project.
+</ParamField>
+
+```json
+[
+  {
+    "id": "84391…",
+    "name": "2026.08",
+    "status": "OPEN",
+    "frozenAt": null,
+    "taskCount": 6
+  }
+]
+```
+
+<ResponseField name="frozenAt" type="string | null">
+  When what this release ships stopped changing. A frozen release has had its branch cut, and a card joins it after that only through a deliberate pick — which is the whole point of the moment.
+</ResponseField>
+
+This is the reading worth putting on a status page: a frozen release with a date is a promise somebody can act on, and an open one is not yet.
+
+## Inbox
+
+<ParamField path="GET /v1/inbox" type="endpoint">
+</ParamField>
+
+What is waiting for a person to decide.
+
+<ParamField query="projectId" type="string">
+  Which product. Optional when the board has one project.
+</ParamField>
+
+Three kinds turn up here:
+
+<ResponseField name="branch_suggestion" type="kind">
+  A branch created by hand whose name matches the team's convention. Tylon offers the link and only offers it — linking the wrong branch to a card on a guess is worse than not noticing it.
+</ResponseField>
+
+<ResponseField name="promotion_blocked" type="kind">
+  A card whose move was refused, with the forge's own words: conflicts, red checks, nothing to merge.
+</ResponseField>
+
+<ResponseField name="error_reported" type="kind">
+  Something a monitor grouped in production. It waits here rather than landing on the board — a backlog that fills itself is a backlog nobody reads.
+</ResponseField>
+
+An inbox that is not empty is the honest thing to alert on. It is, by construction, the list of things a machine could not decide.

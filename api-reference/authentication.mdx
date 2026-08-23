@@ -1,0 +1,71 @@
+---
+title: "Credentials, secrets and rotation"
+description: "A Tylon API credential is a public client id and a secret sent as a Bearer token. Two secrets can be alive at once, which is what makes rotation possible without downtime."
+sidebarTitle: "Authentication"
+---
+
+A credential has two halves.
+
+<ResponseField name="client id" type="tyl_id_…">
+  Public. It travels in logs, in error messages and in support threads on purpose, so that talking about a credential never means showing it.
+</ResponseField>
+
+<ResponseField name="secret" type="tyl_sk_…">
+  Not public. It is the whole proof, and it is what you send.
+</ResponseField>
+
+```bash
+curl https://api.tylon.app/v1/me \
+  -H "Authorization: Bearer tyl_sk_…"
+```
+
+The client id is not sent. The lookup is by the secret alone, because that is the only half that proves anything.
+
+## Making one
+
+**Settings → API credentials**, by somebody who runs the organization.
+
+They live at the organization rather than inside a workspace because a credential reaches as many boards as were ticked — a screen inside any one of them could not show you what revoking would stop.
+
+<Warning>
+  The secret is shown once, when it is made, and stored as a hash. There is no endpoint that answers with it again, and there cannot be one without keeping the secret readable.
+</Warning>
+
+## What it may do
+
+Each board carries its own role, and it can never be higher than the role the person issuing it held on that board. A viewer on one product and an owner on another gives away exactly that.
+
+The role does **not** follow its issuer afterwards. A deploy script must not gain the power to promote a release because whoever set it up was promoted, and must not stop working the day they leave. Changing what a credential may do is a deliberate act on the credential.
+
+## Rotation
+
+A credential may hold **two live secrets at once**, and the number is the feature. With one, every rotation is a window where the integration is down — which is the reason nobody rotates.
+
+<Steps>
+  <Step title="Make the second">
+    On the credential, press rotate. A new secret appears, once.
+  </Step>
+  <Step title="Move the integration onto it">
+    Put it wherever the first one lives. Both work.
+  </Step>
+  <Step title="Watch it be used">
+    The screen shows a last-used time per secret. When it moves onto the new one, nothing is still holding the old one.
+  </Step>
+  <Step title="Revoke the first">
+    Now it costs nothing.
+  </Step>
+</Steps>
+
+Revoking the last remaining secret is refused. A credential that exists and cannot authenticate is a worse thing to own than one that is gone — revoke the credential instead.
+
+## Revoking
+
+Revoking a credential stops **every** secret on it, on **every** board it reaches, at once. The screen names those boards before you confirm.
+
+A credential reaching two organizations can be revoked from either. Whoever runs an organization it can read must be able to stop it reading, without needing an account somewhere else to do it.
+
+## Keeping a secret secret
+
+- It goes in an environment variable or a secret store, never in the repository. The `tyl_sk_` prefix is deliberate: it is what a secret scanner matches on.
+- One credential per integration. Two things sharing one means revoking either takes down both.
+- A credential nobody uses shows a stale last-used time. That is the one worth revoking.

@@ -1,0 +1,76 @@
+---
+title: "tylon API Error Codes and Responses"
+sidebarTitle: "Errors"
+description: "tylon returns standard HTTP status codes and structured JSON error bodies. Reference every error code, its meaning, and the recommended fix."
+---
+
+A refusal is a status code with a JSON body:
+
+```json
+{
+  "message": "That credential is not valid here.",
+  "error": "Unauthorized",
+  "statusCode": 401
+}
+```
+
+Read `statusCode` to decide what to do and `message` to tell a person why. Never parse `message` — it is a sentence, and sentences get rewritten.
+
+## The codes
+
+<ResponseField name="401" type="Unauthorized">
+  No credential, or one that does not work. The response carries `WWW-Authenticate: Bearer realm="Tylon API"`.
+
+  Wrong secret, retired secret and revoked credential all answer the same way on purpose — telling them apart would tell somebody holding a bad secret which kind of bad it is. Check the header is `Bearer tyl_sk_…`, then whether the credential still exists in **Settings → API credentials**.
+</ResponseField>
+
+<ResponseField name="403" type="Forbidden">
+  The credential is good and does not suffice.
+
+  Either the credential was issued for reading only and this was a write, or its role on the board in the header is below what the route needs. The message says which, and which role it holds.
+</ResponseField>
+
+<ResponseField name="400" type="Bad Request">
+  The call did not say enough.
+
+  Usually a missing `X-Tylon-Workspace` on a credential that reaches several boards, or a missing `?projectId=` on a board that holds several projects. Both messages list the ids rather than making you guess. Sending a board id the credential does not reach lands here too — as does sending a name where an id belongs, which is said plainly rather than answered as "no such board".
+</ResponseField>
+
+<ResponseField name="404" type="Not Found">
+  No such thing on the board in your header.
+
+  A card number that does not exist, or a `projectId` belonging to somewhere else. It is `404` and not `403` deliberately: "that exists but is not yours" is already more than the product is willing to say.
+</ResponseField>
+
+<ResponseField name="409" type="Conflict">
+  The request was fine and the world said no.
+
+  A promotion the forge refused — conflicts, red checks, nothing to merge — carries its reason in the caller's own words and leaves the card where it was. An `Idempotency-Key` reused for a different request, or one whose first attempt is still running, lands here too. See [Writing](/api-reference/writing).
+
+  Retrying an unchanged request will get the same answer. Fix the thing that was refused.
+</ResponseField>
+
+<ResponseField name="429" type="Too Many Requests">
+  Over 120 requests in a minute. Back off and retry.
+</ResponseField>
+
+<ResponseField name="500" type="Internal Server Error">
+  Ours. Retrying the same call in a moment is reasonable; retrying it in a tight loop is not.
+</ResponseField>
+
+## Retrying
+
+Only `429` and `500` are worth retrying — everything else will answer the same way until something changes at your end.
+
+```python
+import time, requests
+
+def read(url, secret, tries=4):
+    for attempt in range(tries):
+        r = requests.get(url, headers={"Authorization": f"Bearer {secret}"})
+        if r.status_code not in (429, 500):
+            r.raise_for_status()
+            return r.json()
+        time.sleep(2 ** attempt)
+    r.raise_for_status()
+```
