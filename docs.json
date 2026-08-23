@@ -35,7 +35,7 @@
               },
               {
                 "group": "The screens",
-                "icon": "monitor",
+                "icon": "desktop",
                 "pages": [
                   "en/screens/inbox",
                   "en/screens/backlog",
@@ -120,7 +120,7 @@
               },
               {
                 "group": "As telas",
-                "icon": "monitor",
+                "icon": "desktop",
                 "pages": [
                   "pt-br/screens/inbox",
                   "pt-br/screens/backlog",
