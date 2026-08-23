@@ -46,9 +46,16 @@ Card numbers are the exception and are plain integers, because they are per-boar
 
 ## Rate limit
 
-120 requests per minute, per caller. Over it, `429`.
+120 requests per minute, **per credential**. Over it, `429`.
 
-There is no per-plan tier. If you need more for something real, say so rather than spreading calls across credentials — the limit is a guard against runaways, not a lever.
+Counted by the credential and not by the address it comes from, which is what
+makes the number mean something: two integrations on one CI runner do not
+throttle each other, and one integration spread over a hundred machines does
+not get a hundred budgets.
+
+There is no per-plan tier. If you need more for something real, say so rather
+than issuing extra credentials to get around it — the limit is a guard against
+runaways, not a lever.
 
 ## Versioning
 
