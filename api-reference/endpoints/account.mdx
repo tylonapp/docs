@@ -1,0 +1,129 @@
+---
+title: "Account"
+sidebarTitle: "Account"
+description: "What a Tylon API credential is, which boards it reaches and which organizations they sit in. The three calls that never ask which board you mean."
+---
+
+Three calls about the credential itself rather than about a board — so none of
+them takes an `X-Tylon-Workspace` header, and none refuses for want of one.
+This is where the ids that header accepts come from, so a version that
+demanded one would be a door whose key is behind the door.
+
+## The credential
+
+<ParamField path="GET /v1/me" type="endpoint" />
+
+The first call anybody makes, and the one that answers "is this wired up
+correctly" without touching any data.
+
+```bash
+curl https://api.tylon.app/v1/me \
+  -H "Authorization: Bearer $TYLON_SECRET"
+```
+
+```json
+{
+  "clientId": "tyl_id_1yIrdcxW_gkz8XBY",
+  "name": "the deploy script",
+  "scopes": ["read"],
+  "boards": [
+    {
+      "workspaceId": "84415731592203229",
+      "organizationId": "84415731491539931",
+      "role": "viewer"
+    }
+  ],
+  "answering": null
+}
+```
+
+<ResponseField name="clientId" type="string">
+  The public half of the credential. Safe in a log — it is not what
+  authenticates.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  What it was called when it was issued, and what it signs its writes with.
+  A card it creates says `createdBy: the deploy script`.
+</ResponseField>
+
+<ResponseField name="scopes" type="string[]">
+  `read`, or `read` and `write`. Writing with only `read` is `403`.
+</ResponseField>
+
+<ResponseField name="boards" type="object[]">
+  Every board it reaches, with the role it holds on each. This is the listing:
+  `workspaceId` is exactly what the `X-Tylon-Workspace` header accepts, and
+  nothing else is.
+</ResponseField>
+
+<ResponseField name="answering" type="string | null">
+  Which board served the call. Always `null` here, because this route answers
+  with the list rather than out of it.
+</ResponseField>
+
+## The boards it reaches
+
+<ParamField path="GET /v1/workspaces" type="endpoint" />
+
+The same list as `boards` above, with the words on it. `/v1/me` answers in ids
+because ids are what the header takes; this is the endpoint for writing
+"Checkout" on a screen instead of `83729280714017040`.
+
+```json
+[
+  {
+    "id": "83729280714017040",
+    "name": "Local Sandbox",
+    "slug": "local-sandbox",
+    "organizationId": "81904798345068545",
+    "organizationSlug": "jakson-lucas",
+    "organizationName": "Jakson Lucas",
+    "role": "viewer"
+  }
+]
+```
+
+`role` is the credential's own membership on that board — not the role of
+whoever issued it, and not something that follows them afterwards.
+
+<Note>
+  Only the boards this credential was given. Naming any other workspace's id
+  in the header is `400`, and it will not appear here either.
+</Note>
+
+## The organizations they sit in
+
+<ParamField path="GET /v1/organizations" type="endpoint" />
+
+```json
+[
+  {
+    "id": "84415731491539931",
+    "name": "Acme",
+    "slug": "acme",
+    "workspaceIds": ["84415731592203229"]
+  }
+]
+```
+
+<ResponseField name="workspaceIds" type="string[]">
+  The boards of this organization the credential reaches — not every board the
+  organization has.
+</ResponseField>
+
+There is no `role` here, and that is deliberate rather than missing. A person
+is a member of an organization; a credential is a member of **boards**, and
+reaches an organization only in the sense that some of its boards live there.
+A role in this response would be a number invented to fill a field.
+
+## What to do with it
+
+<Card title="Choosing a board" icon="compass" href="/api-reference/workspaces">
+  How the ids above go into the header, what happens when you leave it out,
+  and why a name is refused where an id belongs.
+</Card>
+
+<Card title="Writing" icon="pen" href="/api-reference/writing">
+  What the `write` scope and the role in `boards` let this credential do.
+</Card>

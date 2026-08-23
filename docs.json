@@ -56,7 +56,7 @@
             "group": "Endpoints",
             "icon": "list",
             "pages": [
-              "api-reference/endpoints/me",
+              "api-reference/endpoints/account",
               "api-reference/endpoints/inbox",
               "api-reference/endpoints/backlog",
               "api-reference/endpoints/board",
@@ -99,5 +99,12 @@
   "background": {
     "light": "#FFFFFF",
     "dark": "#0A0A0A"
-  }
+  },
+  "redirects": [
+    {
+      "source": "/api-reference/endpoints/me",
+      "destination": "/api-reference/endpoints/account",
+      "permanent": true
+    }
+  ]
 }
