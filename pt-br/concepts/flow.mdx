@@ -1,0 +1,65 @@
+---
+title: "O fluxo: colunas que são branches"
+sidebarTitle: "O fluxo"
+description: "Um fluxo do Tylon diz de onde cada estágio corta a sua branch e para onde ela faz merge. Mover um card executa isso, e uma recusa é o card se recusando a mentir."
+---
+
+O fluxo é configurado uma vez, por projeto, e aplicado do mesmo jeito toda vez. É o que torna mover um card determinístico o bastante para automatizar.
+
+## Estágios
+
+As colunas do quadro são os **estágios** do fluxo, em ordem. Cada uma carrega:
+
+<ResponseField name="regras de branch" type="por repositório">
+  De onde a branch é cortada quando um card entra neste estágio, e para onde ela faz merge. É o motor inteiro — uma coluna não é uma etiqueta, é uma base e um alvo.
+</ResponseField>
+
+<ResponseField name="papel mínimo">
+  Quem pode mover um card **para dentro** deste estágio. Promover para produção não é a mesma permissão que começar o trabalho.
+</ResponseField>
+
+O nome da branch vem de um template — `feature/{{number}}-{{title}}` por padrão. Ele importa mais do que parece: o quadro reconhece branches por essa convenção, e uma branch com qualquer outro nome nunca chega ao card para o qual ela foi feita.
+
+## Mover um card executa Git
+
+Dependendo de onde o card cai, o movimento **corta** uma branch, **abre** um pull request ou faz o **merge** de um. O mesmo gesto na tela, três coisas diferentes por baixo, decididas pelo fluxo e não por quem está movendo.
+
+<Warning>
+  Mover um card para trás não é cosmético. O que entrou precisa sair primeiro, então o Tylon abre o revert como um pull request e o card espera onde está até isso entrar.
+</Warning>
+
+## Quando ele recusa
+
+O Tylon nunca força. Se não dá para agir com segurança, ele para e diz por quê, nas palavras do próprio provedor: a branch tem conflitos, os checks estão falhando, não há nada para fazer merge.
+
+Um card nesse estado está **bloqueado**, e o bloqueio nomeia o repositório que recusou. Num card que mexe em três repositórios, ele também diz o que já entrou nos outros dois — dois fatos, não uma frase que alguém precisa desmontar.
+
+O bloqueio some quando o mundo muda embaixo dele: um push na branch do card, um pull request abrindo, o provedor dizendo que a branch faz merge de novo.
+
+<Note>
+  Se um check vermelho bloqueia uma promoção é uma configuração — `requireGreenChecks`, desligada por padrão. Um time cujos repositórios não rodam check nenhum jamais moveria um card sem isso.
+</Note>
+
+## Quem roda o Git do segundo estágio em diante
+
+Três modos, e a escolha é a troca.
+
+<AccordionGroup>
+  <Accordion title="Por card — o padrão">
+    Toda promoção é o pull request daquele card, em todo estágio. Simples, e cada card é independente dos outros.
+  </Accordion>
+
+  <Accordion title="Por branch de release">
+    O release faz o merge da branch de um estágio na do próximo, inteira. É o mais rápido de operar, e leva junto o que mais estiver naquela branch — que é justamente a troca que ele vende.
+  </Accordion>
+
+  <Accordion title="Por cards do release">
+    O release promove os seus cards, cada um pelo próprio pull request. O release continua sendo a unidade de intenção; os merges continuam por card.
+  </Accordion>
+</AccordionGroup>
+
+## O que continua sendo do provedor
+
+Code review, branch protection e CI. O Tylon orquestra acima disso e nunca por baixo: ele lê o que os checks disseram e recusa o card, em vez de rodar checks próprios ou discutir com uma branch protegida.
+
+Cada repositório também mantém a própria identidade — método de merge e versionamento são por projeto. Um time que entrega uma biblioteca e um serviço tem todo motivo para dar squash em um e merge no outro.

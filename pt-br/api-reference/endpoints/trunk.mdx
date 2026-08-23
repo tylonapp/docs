@@ -1,0 +1,72 @@
+---
+title: "Trunk"
+sidebarTitle: "Trunk"
+description: "O que de fato saiu de um quadro do Tylon ao longo de uma janela de dias, e o que foi tirado de volta. Não é um status que alguém digitou."
+---
+
+O que de fato foi entregue, e quando — e se foi revertido.
+
+Não é um status que alguém digitou. O Tylon rodou o merge, então ele sabe o
+que entrou; o provedor diz onde o commit está. Juntar essas duas coisas é a
+leitura sobre a qual uma página de release ou um painel consegue ser honesto,
+e nada mais tem as duas metades.
+
+## Como ler
+
+<ParamField path="GET /v1/trunk" type="endpoint" />
+
+<ParamField query="from" type="string">
+  `YYYY-MM-DD`. O padrão é trinta dias atrás.
+</ParamField>
+
+<ParamField query="to" type="string">
+  `YYYY-MM-DD`. O padrão é hoje.
+</ParamField>
+
+<ParamField query="projectId" type="string">
+  Qual produto. Opcional quando o quadro tem um projeto.
+</ParamField>
+
+Só datas, nunca um timestamp. Um timestamp completo convidaria você a mandar o
+seu próprio fuso e depois a se perguntar por que um card entrou num dia
+diferente daquele em que foi entregue.
+
+```bash
+curl "https://api.tylon.app/v1/trunk?from=2026-08-01&to=2026-08-31" \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 84415731592203229"
+```
+
+<ResponseField name="delivered" type="object[]">
+  Os cards que chegaram ao fim do fluxo dentro da janela.
+</ResponseField>
+
+<ResponseField name="promised" type="object[]">
+  Cards que um release disse que sairiam e que não saíram. A distância entre
+  isto e `delivered` é a versão honesta de uma reunião de status.
+</ResponseField>
+
+<ResponseField name="numbers" type="object">
+  `landed`, `owed`, `refusals`, `reverts` e `leadTimeDays` — quanto tempo um
+  card levou para sair, medido em vez de estimado.
+</ResponseField>
+
+<ResponseField name="releases" type="object[]">
+  Os releases concluídos na janela, cada um com o que ele levou.
+</ResponseField>
+
+## A janela tem um teto
+
+Noventa e dois dias por vez, o mesmo limite que a tela tem. Mais largo é `400`:
+
+```json
+{ "message": "Ask for 92 days or fewer at a time.", "statusCode": 400 }
+```
+
+Um pedido de uma década é um engano em algum lugar, e não uma coisa para
+servir devagar. Estes também:
+
+| | |
+| --- | --- |
+| `?from=2026-08-01&to=2026-07-01` | `The window ends before it starts.` |
+| `?from=yesterday` | `` `from` is a date, as YYYY-MM-DD. `` |

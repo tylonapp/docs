@@ -1,0 +1,53 @@
+---
+title: "Quadro"
+sidebarTitle: "Quadro"
+description: "Leia um quadro do Tylon coluna por coluna — cada estágio do fluxo com os cards parados nele."
+---
+
+O quadro é o trabalho **em andamento**: os estágios do fluxo, e os cards
+parados em cada um. O backlog atrás dele é [uma tela própria](/pt-br/api-reference/endpoints/backlog)
+e um endpoint próprio.
+
+## Como ler
+
+<ParamField path="GET /v1/board" type="endpoint">
+</ParamField>
+
+Cada estágio do fluxo com os cards parados nele, em ordem.
+
+<ParamField query="projectId" type="string">
+  Qual produto. Opcional quando o quadro tem um; `400` quando tem vários.
+</ParamField>
+
+As colunas são os estágios do fluxo, e cada uma é uma regra de branch de verdade — que é por isso que um card parado numa coluna é uma afirmação sobre o repositório, e não um status que alguém digitou.
+
+```json
+{
+  "columns": [
+    {
+      "statusId": "83729308086044949",
+      "name": "In development",
+      "kind": "stage",
+      "minRole": "member",
+      "tasks": [
+        {
+          "id": "84812280205807556",
+          "number": 7,
+          "title": "Invert the log order",
+          "projectId": "83729280726599954",
+          "statusId": "83729308086044949",
+          "priority": "medium",
+          "assignee": null,
+          "labels": []
+        }
+      ]
+    }
+  ]
+}
+```
+
+`minRole` numa coluna é o que é preciso para mover um card **para dentro** dela, e `statusId` é por onde um movimento é endereçado — as duas coisas que um script precisa antes de conseguir promover qualquer coisa.
+
+<Note>
+  `blocked` num card quer dizer que a última promoção dele foi recusada — a branch tinha conflitos, os checks estavam vermelhos, não havia nada para fazer merge. O motivo está no próprio card.
+</Note>

@@ -1,0 +1,63 @@
+---
+title: "O fluxo"
+sidebarTitle: "Fluxo"
+description: "Onde um time do Tylon diz o que cada estágio faz com o Git: os status, a matriz de branches, e quem pode mover um card para dentro de cada um."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/flow.webp" alt="As configurações de fluxo do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/flow.webp" alt="As configurações de fluxo do Tylon" />
+</Frame>
+
+Configurado uma vez, por projeto, e aplicado do mesmo jeito toda vez. Esta é a
+tela que torna mover um card determinístico o bastante para automatizar.
+
+## Os status
+
+Em ordem, com o papel que é preciso ter para mover um card **para dentro** de
+cada um — a coluna diz `mover exige`. No fluxo acima, quatro estágios são de
+`Membro` e **In production** é de `Mantenedor`: promover para produção não é a
+mesma permissão que começar o trabalho.
+
+O primeiro é o **Backlog**, marcado `nasce aqui`: todo card nasce lá e ele
+nunca toca no Git. Um por fluxo.
+
+## A matriz
+
+A própria tela diz em uma linha:
+
+> Estágios em cima. Repositórios na lateral. Cada célula é de onde a branch é
+> tirada e para onde o merge vai — **vazia significa que aquele estágio não
+> toca aquele repositório**.
+
+Então, lendo a linha de `checkout-web` sob *In development*: a branch é tirada
+de `main`, e nada faz merge. Sob *In production*, o merge vai para `main`.
+
+E `checkout-infra` está vazio sob *In development* — aquele repositório entra
+mais adiante no fluxo. Um card que mexe só no app web e na API ganha duas
+branches, não três.
+
+<Warning>
+  Uma célula vazia não é "ainda não configurado". É uma afirmação: este estágio
+  não faz nada com este repositório. É assim que um fluxo diz que um
+  repositório só entra no staging, ou que ele só recebe merge e nunca é
+  cortado.
+</Warning>
+
+## Nomes de branch
+
+Um template — `feature/{{number}}-{{title}}` por padrão. Ele importa mais do
+que parece: o quadro reconhece branches por esta convenção, então uma branch
+com qualquer outro nome nunca chega ao card para o qual foi cortada. Antes de
+cortar uma na mão, pergunte ao Tylon como ela deve se chamar.
+
+## Presets
+
+**Aplicar preset** troca os status e a matriz por um formato que já funciona —
+trunk-based, ou um trem de staging. Mais rápido do que desenhar cinco colunas e
+mais seguro do que adivinhar qual célula deveria ficar vazia.
+
+<Tip>
+  Um projeto novo começa a partir do fluxo de um que já existe e passa a ser
+  dono dele daí em diante. Mudar este não muda nada em nenhum outro lugar.
+</Tip>

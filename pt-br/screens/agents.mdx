@@ -1,0 +1,64 @@
+---
+title: "Agentes"
+sidebarTitle: "Agentes"
+description: "Um agente no Tylon é membro do time: ele tem um papel, recebe cards, escreve neles, e assina o que faz."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/agents.webp" alt="Agentes do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/agents.webp" alt="Agentes do Tylon" />
+</Frame>
+
+Não é uma caixinha de chat com o nome do produto. Um agente é **membro**: ele
+tem um papel no quadro, recebe cards, escreve na discussão, e o que ele faz é
+assinado por ele na história do card.
+
+## O que cada um diz sobre si
+
+```
+Otto   Membro · escreve código → abre um PR, escreve no card, abre subtarefas
+       Acorda quando: um card é atribuído a ele; alguém o menciona num
+       comentário; o pull request dele fica vermelho
+```
+
+Três coisas, e são as três que vale saber antes de deixar um chegar perto de
+um repositório.
+
+<ResponseField name="O papel dele">
+  `Membro`, `Mantenedor` — os mesmos papéis que uma pessoa tem, fazendo o mesmo
+  trabalho. A Iris é mantenedora porque revisar é para o que ela existe.
+</ResponseField>
+
+<ResponseField name="O que ele pode fazer">
+  Não para o que ele serve — as instruções dizem isso — mas o que ele consegue
+  alcançar de fato. Um agente que decide mover um card sem ter a capacidade é
+  avisado de que não pode, e a recusa aparece na rodada.
+</ResponseField>
+
+<ResponseField name="Quando ele acorda">
+  A parte interessante. *"o pull request dele fica vermelho"* é um agente que
+  responde pelo próprio build — ele não está esperando ser chamado, está
+  olhando a coisa que fez.
+</ResponseField>
+
+## Rodadas
+
+Todo despertar é uma rodada, e a lista abaixo dos agentes é o que eles andaram
+fazendo. Um círculo vermelho é uma que não terminou; `4 alterados` é quantos
+arquivos uma rodada tocou.
+
+Uma rodada é o recibo: o que custou, o que leu, o que escreveu, e se deu certo.
+`última falhou em #137` no próprio agente é o mesmo fato, guardado onde quem
+está decidindo se confia nele vai ver.
+
+<Warning>
+  O trabalho de um agente chega como uma **proposta** — um pull request deixado
+  em rascunho. Uma pessoa aprova, e é o provedor que garante isso. Nada que um
+  agente faz entra porque ele decidiu.
+</Warning>
+
+## Onde eles rodam
+
+Num contêiner sem rede. Ele recebe o repositório e o modelo, e nada mais — um
+agente que conseguisse alcançar a internet é um agente cujas instruções são uma
+sugestão.

@@ -1,0 +1,76 @@
+---
+title: "Erros"
+sidebarTitle: "Erros"
+description: "Toda recusa da API do Tylon é um código de status HTTP com um corpo JSON. O que cada um significa, e o que fazer a respeito."
+---
+
+Uma recusa é um código de status com um corpo JSON:
+
+```json
+{
+  "message": "That credential is not valid here.",
+  "error": "Unauthorized",
+  "statusCode": 401
+}
+```
+
+Leia `statusCode` para decidir o que fazer e `message` para dizer a uma pessoa por quê. Nunca faça parse de `message` — é uma frase, e frases são reescritas.
+
+## Os códigos
+
+<ResponseField name="401" type="Unauthorized">
+  Sem credencial, ou com uma que não funciona. A resposta leva `WWW-Authenticate: Bearer realm="Tylon API"`.
+
+  Secret errado, secret aposentado e credencial revogada respondem da mesma forma de propósito — distinguir os casos diria a quem está com um secret ruim que tipo de ruim ele é. Confira se o header é `Bearer tyl_sk_…`, depois se a credencial ainda existe em **Configurações → Credenciais da API**.
+</ResponseField>
+
+<ResponseField name="403" type="Forbidden">
+  A credencial é boa e não basta.
+
+  Ou ela foi emitida só para leitura e isto era uma escrita, ou o papel dela no quadro do header está abaixo do que a rota precisa. A mensagem diz qual dos dois, e qual papel ela tem.
+</ResponseField>
+
+<ResponseField name="400" type="Bad Request">
+  A chamada não disse o suficiente.
+
+  Normalmente um `X-Tylon-Workspace` faltando numa credencial que alcança vários quadros, ou um `?projectId=` faltando num quadro que tem vários projetos. As duas mensagens listam os ids em vez de fazer você adivinhar. Mandar um id de quadro que a credencial não alcança cai aqui também — assim como mandar um nome onde vai um id, o que é dito com todas as letras em vez de respondido como "não existe esse quadro".
+</ResponseField>
+
+<ResponseField name="404" type="Not Found">
+  Não existe isso no quadro que está no seu header.
+
+  Um número de card que não existe, ou um `projectId` que é de outro lugar. É `404` e não `403` deliberadamente: "isso existe mas não é seu" já é mais do que o produto está disposto a dizer.
+</ResponseField>
+
+<ResponseField name="409" type="Conflict">
+  A requisição estava certa e o mundo disse não.
+
+  Uma promoção que o provedor recusou — conflitos, checks vermelhos, nada para fazer merge — leva o motivo nas palavras de quem recusou e deixa o card onde ele estava. Um `Idempotency-Key` reaproveitado para outra requisição, ou um cuja primeira tentativa ainda está rodando, cai aqui também. Veja [Escrever](/pt-br/api-reference/writing).
+
+  Repetir a mesma requisição sem mudar nada vai receber a mesma resposta. Conserte o que foi recusado.
+</ResponseField>
+
+<ResponseField name="429" type="Too Many Requests">
+  Mais de 120 requisições num minuto nesta credencial. Recue e tente de novo — o orçamento é por credencial, então outra não é afetada e emitir uma segunda para contornar não é a resposta.
+</ResponseField>
+
+<ResponseField name="500" type="Internal Server Error">
+  É nosso. Repetir a mesma chamada daqui a pouco é razoável; repetir num laço apertado não é.
+</ResponseField>
+
+## Tentar de novo
+
+Só `429` e `500` valem uma nova tentativa — todo o resto vai responder igual até que algo mude do seu lado.
+
+```python
+import time, requests
+
+def read(url, secret, tries=4):
+    for attempt in range(tries):
+        r = requests.get(url, headers={"Authorization": f"Bearer {secret}"})
+        if r.status_code not in (429, 500):
+            r.raise_for_status()
+            return r.json()
+        time.sleep(2 ** attempt)
+    r.raise_for_status()
+```

@@ -1,0 +1,65 @@
+---
+title: "Um card"
+sidebarTitle: "Um card"
+description: "O que um card do Tylon carrega: as branches e os pull requests dele em cada repositório, o motivo de estar bloqueado, e a história de tudo que aconteceu com ele."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/blocked.webp" alt="Um card bloqueado no Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/blocked.webp" alt="Um card bloqueado no Tylon" />
+</Frame>
+
+Este card está bloqueado, que é o estado que vale mostrar primeiro — um card
+que anda sem problema não tem nada a explicar.
+
+## A recusa vem nas palavras do provedor
+
+> Required status check "contract-tests" is expected. GitHub refused the merge:
+> the branch is 4 commits behind main and the branch protection rule on main
+> requires branches to be up to date before merging.
+
+O Tylon não resumiu isso nem traduziu para um status. Ele pediu ao GitHub que
+fizesse o merge, o GitHub disse não, e isto é o que ele disse — em inglês
+porque foi ele quem escreveu. Logo abaixo: **o card ficou onde estava.** Nada
+aconteceu pela metade.
+
+## Um card, três repositórios
+
+```
+checkout-web    feature/139-split-the-payment-intent-per-seller → main   Checagens passando
+checkout-api    feature/139-split-the-payment-intent-per-seller → main   Checagens falhando
+checkout-infra  feature/139-split-the-payment-intent-per-seller → main   Checagens passando
+```
+
+**um está vermelho — nenhum deles anda.** Dois de três verdes não são dois
+terços de uma entrega, e um quadro que deixasse este passar seria um quadro
+dizendo "entregue" sobre uma coisa que saiu pela metade.
+
+## Quando não há nada de errado
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/task.webp" alt="Um card do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/task.webp" alt="Um card do Tylon" />
+</Frame>
+
+O mesmo card sem nada no caminho: os repositórios, as branches e os pull
+requests deles, e nenhum aviso. A maioria dos cards é assim — o bloqueado está
+acima porque é o estado que tem algo a dizer.
+
+## Propriedades
+
+Status, responsável, prioridade, funcionalidade, prazo, etiquetas. Sob o
+status, de novo, o que aquele estágio faz com o Git — `não toca o Git` aqui,
+porque **In review** é um estágio que espera em vez de fazer merge.
+
+## As abas
+
+| | |
+| --- | --- |
+| **Log** | Tudo que aconteceu, com a discussão entremeada — movimentos, branches cortadas, pushes, comentários, o que os agentes fizeram. Do mais novo para o mais velho. |
+| **Subtarefas** | Cards que pertencem a este. |
+| **Arquivos** | As páginas e os arquivos que vale ler antes de mexer nele. |
+| **Alteração** | O diff do que este card fez, por repositório, lido sem sair daqui. |
+
+Uma pessoa que não escreve código consegue ler as quatro. É esse o sentido de
+elas estarem aqui em vez de um link para o provedor.

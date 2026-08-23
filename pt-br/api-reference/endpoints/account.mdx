@@ -1,0 +1,128 @@
+---
+title: "Conta"
+sidebarTitle: "Conta"
+description: "O que é uma credencial da API do Tylon, quais quadros ela alcança e em quais organizações eles ficam. As três chamadas que nunca perguntam de qual quadro você está falando."
+---
+
+Três chamadas sobre a própria credencial, e não sobre um quadro — então
+nenhuma delas recebe o header `X-Tylon-Workspace`, e nenhuma recusa por falta
+dele. É daqui que vêm os ids que aquele header aceita, então uma versão que
+exigisse um seria uma porta cuja chave está atrás da porta.
+
+## A credencial
+
+<ParamField path="GET /v1/me" type="endpoint" />
+
+A primeira chamada que qualquer um faz, e a que responde "isto está ligado
+direito?" sem tocar em dado nenhum.
+
+```bash
+curl https://api.tylon.app/v1/me \
+  -H "Authorization: Bearer $TYLON_SECRET"
+```
+
+```json
+{
+  "clientId": "tyl_id_1yIrdcxW_gkz8XBY",
+  "name": "the deploy script",
+  "scopes": ["read"],
+  "boards": [
+    {
+      "workspaceId": "84415731592203229",
+      "organizationId": "84415731491539931",
+      "role": "viewer"
+    }
+  ],
+  "answering": null
+}
+```
+
+<ResponseField name="clientId" type="string">
+  A metade pública da credencial. Segura num log — não é ela que autentica.
+</ResponseField>
+
+<ResponseField name="name" type="string">
+  Como ela foi chamada quando foi emitida, e com o que ela assina as escritas
+  dela. Um card que ela cria diz `createdBy: the deploy script`.
+</ResponseField>
+
+<ResponseField name="scopes" type="string[]">
+  `read`, ou `read` e `write`. Escrever só com `read` é `403`.
+</ResponseField>
+
+<ResponseField name="boards" type="object[]">
+  Todo quadro que ela alcança, com o papel que ela tem em cada um. Esta é a
+  listagem: `workspaceId` é exatamente o que o header `X-Tylon-Workspace`
+  aceita, e nada mais.
+</ResponseField>
+
+<ResponseField name="answering" type="string | null">
+  Qual quadro atendeu a chamada. Sempre `null` aqui, porque esta rota responde
+  com a lista em vez de responder de dentro dela.
+</ResponseField>
+
+## Os quadros que ela alcança
+
+<ParamField path="GET /v1/workspaces" type="endpoint" />
+
+A mesma lista de `boards` acima, com as palavras nela. `/v1/me` responde em
+ids porque ids são o que o header aceita; este é o endpoint para escrever
+"Checkout" numa tela em vez de `83729280714017040`.
+
+```json
+[
+  {
+    "id": "83729280714017040",
+    "name": "Local Sandbox",
+    "slug": "local-sandbox",
+    "organizationId": "81904798345068545",
+    "organizationSlug": "jakson-lucas",
+    "organizationName": "Jakson Lucas",
+    "role": "viewer"
+  }
+]
+```
+
+`role` é a participação da própria credencial naquele quadro — não o papel de
+quem a emitiu, e não algo que acompanhe essa pessoa depois.
+
+<Note>
+  Só os quadros que foram dados a esta credencial. Nomear no header o id de
+  qualquer outro workspace é `400`, e ele também não vai aparecer aqui.
+</Note>
+
+## As organizações em que eles ficam
+
+<ParamField path="GET /v1/organizations" type="endpoint" />
+
+```json
+[
+  {
+    "id": "84415731491539931",
+    "name": "Acme",
+    "slug": "acme",
+    "workspaceIds": ["84415731592203229"]
+  }
+]
+```
+
+<ResponseField name="workspaceIds" type="string[]">
+  Os quadros desta organização que a credencial alcança — não todos os quadros
+  que a organização tem.
+</ResponseField>
+
+Não existe `role` aqui, e isso é deliberado em vez de esquecido. Uma pessoa é
+membro de uma organização; uma credencial é membro de **quadros**, e alcança
+uma organização apenas no sentido de que alguns quadros dela moram ali. Um
+papel nesta resposta seria um número inventado para preencher um campo.
+
+## O que fazer com isso
+
+<Card title="Escolher um quadro" icon="compass" href="/pt-br/api-reference/workspaces">
+  Como os ids acima entram no header, o que acontece quando você o omite, e
+  por que um nome é recusado onde vai um id.
+</Card>
+
+<Card title="Escrever" icon="pen" href="/pt-br/api-reference/writing">
+  O que o escopo `write` e o papel em `boards` deixam esta credencial fazer.
+</Card>

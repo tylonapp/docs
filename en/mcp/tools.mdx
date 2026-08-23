@@ -1,0 +1,78 @@
+---
+title: "What the tools do"
+sidebarTitle: "Tools"
+description: "The 65 tools Tylon's MCP server offers, by what they are for: cards, the board, the inbox, pages, releases, agents and setup."
+---
+
+Sixty-five tools. You do not need to learn them — the editor lists them and the model picks. What is worth knowing is the shape of the day they were written for.
+
+## The day
+
+<Steps>
+  <Step title="See what there is">
+    `my_work` or `find_cards`, then `read_card` for the whole of one.
+  </Step>
+  <Step title="Before cutting a branch">
+    `branch_for_card`. It answers with the name the team's convention gives — and a branch named anything else is invisible to the board, so it never reaches the card it was for.
+  </Step>
+  <Step title="After pushing">
+    `read_inbox`, then `adopt_branch` to link it.
+  </Step>
+  <Step title="Moving the card">
+    `move_card` is what runs Git. Depending on where the card lands it cuts a branch, opens a pull request, or merges one.
+  </Step>
+</Steps>
+
+<Note>
+  Nothing here reads a file or runs a command. Tylon holds the work — cards, the flow, the branches each one owns, the releases they ship in. The code is on your machine, and reading and editing it is your editor's job.
+</Note>
+
+## The two you cannot get locally
+
+`read_checks` and `read_reviews`. The build ran on the forge and the reviews were left there, so no amount of looking at your working copy will answer either.
+
+The public API has both too, as JSON rather than sentences — see [Checks and reviews](/en/api-reference/endpoints/forge).
+
+## By group
+
+<AccordionGroup>
+  <Accordion title="Cards — 19 tools">
+    `my_work` `find_cards` `read_card` `read_timeline` `branch_for_card` `read_checks` `read_reviews` `create_card` `update_card` `move_card` `comment` `link_repository` `open_pull_request` `remember` `read_diff` `edit_comment` `delete_comment` `unlink_repository` `delete_card`
+  </Accordion>
+
+  <Accordion title="Board and projects — 16 tools">
+    `read_board` `read_flow` `read_backlog` `list_projects` `create_project` `update_project` `delete_project` `list_labels` `create_label` `update_label` `delete_label` `list_features` `create_feature` `update_feature` `delete_feature` `set_flow`
+  </Accordion>
+
+  <Accordion title="Releases and trunk — 10 tools">
+    `list_releases` `read_trunk` `create_release` `set_release_cards` `freeze_release` `unfreeze_release` `promote_release` `cherry_pick` `complete_release` `delete_release`
+  </Accordion>
+
+  <Accordion title="Setup — 8 tools">
+    `list_members` `invite_member` `change_member_role` `list_repositories` `list_connectable_repositories` `add_repository` `connect_git_url` `list_credentials`
+  </Accordion>
+
+  <Accordion title="Agents — 5 tools">
+    `list_agents` `list_proposals` `approve_proposal` `reject_proposal` `list_runs`
+  </Accordion>
+
+  <Accordion title="Pages — 4 tools">
+    `list_docs` `read_doc` `write_doc` `delete_doc`
+  </Accordion>
+
+  <Accordion title="Inbox — 3 tools">
+    `read_inbox` `adopt_branch` `dismiss_inbox_item`
+  </Accordion>
+</AccordionGroup>
+
+## What a refusal looks like
+
+A "no" comes back as a sentence at the tool's normal result, not as a protocol error — "this needs the maintainer role", "the PR opens on the first push". That is deliberate: a model reads sentences, and an error where an answer should be is a client rendering nothing.
+
+It is also the difference from the [public API](/en/api-reference/errors), where a refusal is a status code because the reader is a program.
+
+## Two rules the tools enforce
+
+**Scope.** A connection approved for `workspace:read` is told so when a write is attempted, rather than failing halfway.
+
+**Role, live.** Checked per board on every call, against your membership as it is right now — not as it was when you connected.

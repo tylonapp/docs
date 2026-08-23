@@ -1,0 +1,67 @@
+---
+title: "Uma rodada"
+sidebarTitle: "Rodadas"
+description: "O recibo de um despertar de um agente: o que o acordou, quanto custou, o que ele leu, e cada linha que ele escreveu."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/run.webp" alt="Uma rodada de agente no Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/run.webp" alt="Uma rodada de agente no Tylon" />
+</Frame>
+
+Todo despertar de um agente é uma rodada, e uma rodada pertence ao card sobre o
+qual ela foi — o caminho aqui é *Quadro › #144 Apple Pay on the checkout sheet
+› Otto · succeeded*. Não é um log em outro sistema que por acaso menciona um
+card.
+
+## A linha sob o título
+
+```
+modelo claude-opus-5   acordado por um card é atribuído a ele   turnos 9
+tokens 226.430 (214.803 entrando, 11.627 saindo)   de cache 186.440 · 87% da entrada
+custo USD 1,84   levou 420s
+```
+
+<ResponseField name="acordado por">
+  Qual gatilho disparou, nas palavras que a configuração do próprio agente usa.
+  Um agente que começou porque alguém o mencionou e um que começou porque o
+  build dele ficou vermelho são duas coisas diferentes de se estar olhando.
+</ResponseField>
+
+<ResponseField name="turnos">
+  Quantas vezes ele voltou ao modelo. Uma rodada que levou nove turnos para
+  escrever quatro arquivos leu alguma coisa que não esperava.
+</ResponseField>
+
+<ResponseField name="custo, e o que veio de cache">
+  Em dinheiro, ao lado dos tokens de onde ele veio. *87% da entrada de cache* é
+  por que o número é o que é, e é a primeira coisa a olhar quando uma rodada
+  custa mais que a anterior.
+</ResponseField>
+
+<ResponseField name="levou">
+  Tempo de relógio. O bastante para valer saber antes de ligar um agente a um
+  gatilho que dispara com frequência.
+</ResponseField>
+
+## O que ele escreveu
+
+**Arquivos**, à direita, é a mudança inteira — `4 alterados, +117 −1` — como a
+árvore em que ela caiu. Abrir um deles troca a transcrição pelo patch, que é a
+mesma ordem em que qualquer um revisando um pull request lê: o que foi tocado,
+depois o que mudou dentro.
+
+A transcrição é o argumento; o diff é a coisa que está sendo oferecida.
+
+<Warning>
+  O que um agente escreve chega como uma **proposta** — um pull request deixado
+  em rascunho. Uma pessoa aprova, e é o provedor que garante isso. Não existe,
+  deliberadamente, endpoint na [API](/pt-br/api-reference/introduction) que
+  aprove uma.
+</Warning>
+
+<Tip>
+  As rodadas de todos os agentes ficam listadas juntas na [tela de
+  agentes](/pt-br/screens/agents), onde um círculo vermelho é uma que não
+  terminou.
+</Tip>

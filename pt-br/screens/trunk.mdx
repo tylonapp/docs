@@ -1,0 +1,60 @@
+---
+title: "O trunk"
+sidebarTitle: "Trunk"
+description: "Uma linha ao longo do mês: o que entrou, o que foi prometido e não saiu, e os cinco números que dizem se o quadro está andando."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/trunk.webp" alt="O trunk do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/trunk.webp" alt="O trunk do Tylon" />
+</Frame>
+
+O quadro diz o que está em andamento. O trunk diz o que de fato entrou, em que
+dia, e se lê um mês por vez.
+
+## A linha
+
+`HEAD → refs/heads/main` no alto é o que a linha é: a branch para onde este
+projeto promove, não uma abstração acima dela.
+
+<ResponseField name="Abaixo da linha">
+  Um card que chegou ao último estágio do fluxo dele, no dia em que chegou.
+</ResponseField>
+
+<ResponseField name="Acima da linha">
+  Um card que está prometido dentro desta janela e não saiu. Um no print,
+  ainda no quadro, em **In development**.
+</ResponseField>
+
+<ResponseField name="Sólida, depois tracejada">
+  Sólida onde o trabalho já aconteceu, tracejada onde o mês ainda não chegou.
+  O tracejado não é previsão; é a parte de agosto que ainda está pela frente.
+</ResponseField>
+
+O quadrado cheio é uma **release fechada**. `Wallets, first half`, com os
+cards que ela levou listados em *Na trunk* logo abaixo.
+
+## Os cinco números
+
+```
+4 saíram          1 prometido, não saiu     28.6 dias até aterrissar
+1 promoção recusada                         0 revert aberto
+```
+
+Cada um é uma frase sobre a mesma janela, e cada um diz como foi contado —
+porque uma métrica de entrega que ninguém consegue reproduzir é uma métrica de
+entrega com a qual alguém vai discutir.
+
+**28,6 dias até aterrissar** é o card do meio, do dia em que saiu do Backlog
+até o dia em que aterrissou. Lido de 4 cards: os que não têm saída do backlog
+não têm de onde datar, e ficam de fora em vez de entrarem como zero.
+
+**1 promoção recusada** é um movimento que o provedor não aceitou. **0 revert
+aberto** é um pull request de revert a partir de um card que já tinha
+aterrissado — o número que diz se o que saiu continuou fora.
+
+<Tip>
+  As setas no canto superior direito voltam pelos meses anteriores, e a mesma
+  janela está disponível para um script em
+  [`GET /v1/trunk`](/pt-br/api-reference/endpoints/trunk).
+</Tip>

@@ -1,0 +1,132 @@
+---
+title: "Releases"
+sidebarTitle: "Releases"
+description: "Leia e escreva os releases do Tylon — o que sai junto, congelar, fazer pick, promover e concluir."
+---
+
+Um grupo de cards de um projeto, entregues juntos. Opcional por fluxo: um
+time que entrega continuamente desliga os releases e nunca esbarra em nada
+disto.
+
+## Como ler
+
+<ParamField path="GET /v1/releases" type="endpoint">
+</ParamField>
+
+Os releases de um produto, abertos e concluídos.
+
+<ParamField query="projectId" type="string">
+  Qual produto. Opcional quando o quadro tem um projeto.
+</ParamField>
+
+```json
+[
+  {
+    "id": "84391…",
+    "name": "2026.08",
+    "status": "open",
+    "frozenAt": null,
+    "taskCount": 6,
+    "createdByName": "Marina Duarte",
+    "completedAt": null,
+    "tags": []
+  }
+]
+```
+
+<ResponseField name="status" type="string">
+  `open` ou `completed`, em minúsculas. Um release congelado ainda é `open` —
+  congelar não é um terceiro status, é um release que passou a ter uma branch
+  própria e que se conclui do mesmo jeito.
+</ResponseField>
+
+<ResponseField name="frozenAt" type="string | null">
+  Quando o que este release entrega parou de mudar. Um release congelado já teve a branch cortada, e um card só entra nele depois disso por um pick deliberado — que é justamente o sentido daquele momento.
+</ResponseField>
+
+Esta é a leitura que vale colocar numa página de status: um release congelado com data é uma promessa sobre a qual dá para agir, e um aberto ainda não é.
+
+## Criar e dar forma a um release
+
+<ParamField path="POST /v1/releases" type="endpoint" />
+
+<ParamField body="name" type="string" required>
+  De 1 a 80 caracteres — `2026.09`, `Reescrita do checkout`.
+</ParamField>
+
+<ParamField query="projectId" type="string">
+  Qual produto. Um release entrega um só, então isto é obrigatório quando o
+  quadro tem vários.
+</ParamField>
+
+<ParamField path="PUT /v1/releases/{id}/cards" type="endpoint" />
+
+<ParamField body="taskNumbers" type="integer[]" required>
+  O escopo inteiro, não acréscimos — até 500. `PUT` porque quem calcula o
+  escopo em outro lugar quer dizer o que ele é agora, em vez de compará-lo com
+  o que estiver lá.
+</ParamField>
+
+Responde `204`.
+
+<Note>
+  O fluxo precisa estar com releases ligados. Caso contrário isto é `400`:
+  *"This flow does not work with releases. Turn it on in the flow settings
+  first."* Um time que entrega continuamente nunca esbarra em nada disto.
+</Note>
+
+## Congelar
+
+<ParamField path="POST /v1/releases/{id}/freeze" type="endpoint" />
+
+Maintainer. Corta a branch, e daquele segundo em diante o que isto entrega
+para de mudar — que é o que faz de "o que tem neste release" uma pergunta com
+resposta.
+
+<ParamField path="DELETE /v1/releases/{id}/freeze" type="endpoint" />
+
+As duas respondem com o release.
+
+## Fazer pick para dentro de um congelado
+
+<ParamField path="POST /v1/releases/{id}/pick" type="endpoint" />
+
+<ParamField body="taskNumber" type="integer" required />
+
+A única porta de entrada depois de um congelamento, um card por vez. Isso é o
+ponto, e não uma limitação: um release em que dá para adicionar em lote depois
+de congelar é um release que nunca foi congelado.
+
+## Promover
+
+<ParamField path="POST /v1/releases/{id}/promote" type="endpoint" />
+
+<ParamField body="statusId" type="string" required>
+  O estágio para onde mover os cards do release.
+</ParamField>
+
+<ParamField body="taskNumbers" type="integer[]">
+  Só estes. Omitido, o release inteiro vai.
+</ParamField>
+
+Responde `200` com um resultado em vez de lançar erro. Um release de doze
+cards em que nove foram promovidos e três foram recusados é notícia, não erro
+— as recusas estão no corpo, cada uma nomeando o seu card e o repositório que
+disse não, e os nove que entraram continuam entrados.
+
+## Concluir
+
+<ParamField path="POST /v1/releases/{id}/complete" type="endpoint" />
+
+Maintainer. Cria as tags e o fecha.
+
+<ParamField body="versions" type="object[]" required>
+  Uma entrada por repositório: `{ "repositoryId": "…", "tagName": "v2.4.0" }`.
+  Cada repositório ganha a sua tag e o seu release no provedor, porque cada um
+  mantém o próprio versionamento — não existe um número único para uma entrega
+  que atravessa três deles.
+</ParamField>
+
+<ParamField path="DELETE /v1/releases/{id}" type="endpoint" />
+
+Maintainer. `204`.

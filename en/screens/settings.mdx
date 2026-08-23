@@ -1,0 +1,112 @@
+---
+title: "Settings"
+sidebarTitle: "Settings"
+description: "Who is on the board and what their role lets them do, the rules that do the mechanical half of the work, and the credentials that let something outside a browser in."
+---
+
+Four tabs: **General**, **Members**, **Rules** and **Errors**. The three
+below are the ones that change what other people — and other things — can do
+here.
+
+## Members
+
+<Frame>
+  <img className="block dark:hidden" src="/images/light/members.webp" alt="Members of a Tylon workspace" />
+  <img className="hidden dark:block" src="/images/dark/members.webp" alt="Members of a Tylon workspace" />
+</Frame>
+
+*The role defines what each person can do — and which statuses they can move a
+card into.* That second half is the one worth reading twice: a role here is
+not a label, it is the answer the board gives when somebody drags a card into
+**In production**.
+
+<ResponseField name="Owner">
+  The workspace is theirs, including who else holds it.
+</ResponseField>
+
+<ResponseField name="Maintainer">
+  Promotes. The stages that merge into `main` name `Maintainer` as their
+  minimum role on [the board](/en/screens/board).
+</ResponseField>
+
+<ResponseField name="Member">
+  Does the work: starts cards, pushes branches, opens pull requests.
+</ResponseField>
+
+<ResponseField name="Viewer">
+  Reads.
+</ResponseField>
+
+**Iris** and **Otto** are in this list with roles of their own. [An
+agent](/en/screens/agents) is a member, so the same table answers "what may this
+agent do" without a second permission model to keep in step with the first.
+
+Invites are a link you hand over — Tylon builds it and does not send the email
+itself.
+
+<Warning>
+  The server is the authority. The interface hides what a role cannot do, and
+  hiding a button is convenience, never authorization — the same move made
+  through the API or the MCP server is refused the same way.
+</Warning>
+
+## Rules
+
+<Frame>
+  <img className="block dark:hidden" src="/images/light/rules.webp" alt="Automation rules in Tylon" />
+  <img className="hidden dark:block" src="/images/dark/rules.webp" alt="Automation rules in Tylon" />
+</Frame>
+
+*The mechanical half of the work: assign, label, prioritise, park, say
+something.* Each rule reads as one sentence — **When** … **then** … — and the
+line under it says whether it has ever actually run.
+
+```
+When a promotion is refused          — then mark it as waiting, add a label
+When a label is added · security     — then set the priority
+When a card sits still for 3 days · In review — then write on the card
+```
+
+The third trigger is the one most boards cannot express. *Sitting still* is
+not an event: nothing happened, and nothing happening for three days is
+exactly the thing a review queue needs somebody to notice.
+
+<Note>
+  Anything that needs judgement is a single action — **wake an agent** —
+  because a rule that thinks is a rule nobody can predict. When a rule does
+  act, it acts as whoever wrote it, and the card's story names the rule that
+  did it.
+</Note>
+
+## API credentials
+
+<Frame>
+  <img className="block dark:hidden" src="/images/light/api-credentials.webp" alt="Making a Tylon API credential" />
+  <img className="hidden dark:block" src="/images/dark/api-credentials.webp" alt="Making a Tylon API credential" />
+</Frame>
+
+How something that is not a browser reads and writes here — a deploy script, a
+status page, a spreadsheet. It brings a client id and a secret instead of a
+person through a sign-in.
+
+<ResponseField name="Boards it reaches">
+  One or several, each with its own role, the same way you connect an editor.
+  On each board it may do what you ticked and never more than you hold there —
+  and it keeps that whatever later happens to you.
+</ResponseField>
+
+<ResponseField name="Scopes">
+  `read` is always there. `write` lets it open cards, move them, cut branches
+  and promote releases, every write carrying an `Idempotency-Key`.
+</ResponseField>
+
+The secret is shown **once**, when it is made. There is no way to show it
+later without keeping it readable, so have somewhere to put it before you
+press the button. To roll one over, make a second secret, move the integration
+across, then revoke the old one — both are live in the meantime, so nothing
+goes dark during the swap.
+
+<Card title="The API reference" icon="code" href="/en/api-reference/authentication">
+  What to send, which board a request lands on, and how writes stay safe to
+  retry.
+</Card>

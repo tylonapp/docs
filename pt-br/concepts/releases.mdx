@@ -1,0 +1,53 @@
+---
+title: "Releases, congelamento e o trunk"
+sidebarTitle: "Releases e trunk"
+description: "Um release do Tylon agrupa cards de um projeto. Congelar corta a branch e faz parar de mudar o que vai ser entregue; o trunk diz o que de fato saiu."
+---
+
+Releases são **opcionais**, por fluxo. Um time que entrega continuamente desliga isso e nunca esbarra em nada do que está aqui.
+
+## Um release
+
+Um grupo de cards de um projeto, entregues juntos, com identidade própria: um nome, um escopo, uma data. Ao ser concluído, cada repositório envolvido ganha a sua tag e o seu release no provedor — porque cada repositório mantém o próprio versionamento.
+
+## Congelar
+
+O momento em que o que um release entrega **para de mudar**.
+
+Congelar corta a branch, então a partir daquele segundo existe uma resposta para "o que tem neste release" que não muda enquanto alguém está testando. Depois disso, um card só entra por um **pick** — um ato deliberado, um card de cada vez, em vez do que por acaso tiver entrado desde então.
+
+<Note>
+  Este é um fato que só o Tylon tem. O GitHub tem a branch e não tem o release; um quadro tem o release e não tem a branch. Quem cortou a branch é quem sabe o que estava nela naquele segundo.
+</Note>
+
+## Um hotfix, e o que ele deve
+
+Algumas correções não podem esperar a fila. Um hotfix é cortado da ponta final do fluxo em vez da inicial, e chega direto à produção.
+
+Pular o fluxo é tarefa do Git. O que é **nosso** é saber que a correção não está na branch de onde o próximo release vai ser cortado — então o card carrega uma dívida: um back-merge, aberto como pull request, até que a correção esteja onde o próximo release vai encontrá-la.
+
+Sem isso, a mudança mais urgente que o seu time já entregou é a que tem mais chance de sumir no release seguinte.
+
+## O trunk
+
+O que de fato saiu, e quando — e se foi tirado de volta.
+
+Não é um status que alguém digitou. O Tylon rodou o merge, então ele sabe; o provedor diz onde o commit está. Juntar essas duas coisas é a leitura sobre a qual uma página de release consegue ser honesta.
+
+```bash
+curl "https://api.tylon.app/v1/trunk?from=2026-08-01&to=2026-08-31" \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 84415731592203229"
+```
+
+<Card title="Trunk" icon="chart-line" href="/pt-br/api-reference/endpoints/trunk">
+  O que saiu, o que foi prometido e não saiu, e quanto tempo um card levou.
+</Card>
+
+Um release com `frozenAt` é uma promessa sobre a qual dá para agir. Um ainda aberto ainda não é.
+
+## Onde ainda é preciso uma pessoa
+
+A **caixa de entrada** é a fila de decisões que uma máquina não conseguiu tomar: uma branch criada na mão que parece pertencer a um card, uma promoção que o provedor recusou, um erro que um monitor agrupou em produção.
+
+Ela nunca é uma cópia de estado. Se a caixa de entrada está vazia, nada está esperando por um humano — o que faz dela a coisa honesta de se alertar.

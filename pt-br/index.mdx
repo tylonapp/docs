@@ -1,0 +1,35 @@
+---
+title: "Tylon: o painel de controle do Git"
+description: "O Tylon é onde o trabalho vive e onde o Git acontece. Uma coluna é uma branch de verdade, mover um card é um merge de verdade. Esta documentação cobre a API pública e o servidor MCP."
+sidebarTitle: "Introdução"
+---
+
+O Tylon é um quadro cujas colunas são branches de verdade. Mover um card corta uma branch, abre um pull request ou faz um merge — então o quadro não consegue dizer "pronto" enquanto o repositório discorda.
+
+<Card title="Comece por aqui" icon="book-open" href="/pt-br/concepts/cards">
+  O que é um card, o que uma coluna realmente é, e o que acontece quando você move uma. Dez minutos que fazem o resto desta documentação ser lida de outro jeito.
+</Card>
+
+## Chegar a um quadro de fora
+
+Duas portas. Elas alcançam os mesmos quadros e aplicam as mesmas permissões — o que muda é quem está atrás da chamada.
+
+<Card title="API pública" icon="plug" href="/pt-br/api-reference/introduction">
+  Uma credencial, um header `Bearer` e JSON. Para um script de deploy, uma página de status, uma planilha — qualquer coisa que não tenha uma pessoa sentada na frente.
+</Card>
+
+<Card title="Servidor MCP" icon="terminal" href="/pt-br/mcp/connect">
+  Para um editor ou um agente trabalhando como **você**. Ele entra do mesmo jeito que você entra, lê o que você pode ler, e responde em frases em vez de JSON.
+</Card>
+
+## Qual das duas você quer
+
+|  | API pública | Servidor MCP |
+| --- | --- | --- |
+| Autentica | uma máquina | uma pessoa |
+| Credencial | client id e segredo | OAuth 2.0 com PKCE |
+| Responde em | JSON, com códigos de status HTTP | prosa, para um modelo ler |
+| Escreve | com o escopo `write` e uma chave de idempotência | sim |
+| Configurada em | **Configurações → Credenciais da API** | seu editor, em uma URL |
+
+Se existe uma pessoa presente que poderia clicar em **Aprovar**, use o MCP. Se não há nada presente além de uma entrada no cron, use a API.

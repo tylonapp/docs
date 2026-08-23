@@ -1,0 +1,74 @@
+---
+title: "Páginas"
+sidebarTitle: "Páginas"
+description: "As páginas que um time do Tylon escreve para si e para os seus agentes — convenções, runbooks, o que foi uma decisão — ligadas entre si e aos cards."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/docs.webp" alt="Páginas do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/docs.webp" alt="Páginas do Tylon" />
+</Frame>
+
+O que um time sabe, escrito onde o trabalho está — e, deliberadamente, onde os
+agentes leem.
+
+## Por que não é um wiki em outra aba
+
+Um agente prestes a mexer neste repositório lê estas páginas. *How we name
+branches*, *Writing migrations*, *Working with the provider* não são
+documentação sobre o produto; são as instruções que se espera que um membro
+tenha.
+
+Ficam aqui em vez de em outra ferramenta pelo mesmo motivo que o diff fica:
+uma coisa que a pessoa precisa ir a outro lugar para achar é uma coisa que
+desatualiza, e um agente não consegue ir a lugar nenhum.
+
+## Links entre páginas
+
+`[[decline-taxonomy]]` no corpo é um link. As páginas apontam umas para as
+outras, e uma página sabe o que aponta para ela — então uma convenção da qual
+três runbooks dependem diz isso em si mesma.
+
+Um link para uma página que ainda não existe não é erro. É uma página que
+alguém decidiu que vale escrever, e as que ninguém escreveu ficam listadas
+como tal.
+
+## O grafo
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/docs-graph.webp" alt="O grafo de páginas do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/docs-graph.webp" alt="O grafo de páginas do Tylon" />
+</Frame>
+
+As mesmas páginas desenhadas como aquilo para o que apontam, com a contagem
+acima:
+
+```
+10 páginas, 5 links · 1 nunca escrita · 4 sem ligação nenhuma
+5 levadas para rodadas
+```
+
+Três tipos de bolinha, e as duas que importam são as que não são apenas uma
+página. **Levada por um card ou um agente** é uma página que alguma coisa está
+de fato lendo — *How we name branches*, *Working with the provider*, *Checkout
+principles*. **Referenciada, não escrita** é o contorno tracejado: *Retry
+policy* é citada por uma página que alguém escreveu e ainda não existe.
+
+*4 sem ligação nenhuma* é a metade honesta do retrato. Uma página que ninguém
+liga e nada carrega é uma página que não faz parte de como este time trabalha,
+diga ela o que disser por dentro.
+
+## Páginas encerradas
+
+Apagar uma página a **encerra** em vez de removê-la, e as encerradas ficam no
+pé da árvore com **Restaurar** ao lado.
+
+A mesma regra de todo o resto aqui: uma decisão que alguém tomou e depois
+reverteu faz parte de como o time chegou onde está, e um wiki que esquece isso
+é um wiki que vai ter a mesma discussão de novo.
+
+<Tip>
+  Páginas podem ser escritas pela API também, que é o caso que vale automatizar:
+  uma convenção que já vive num linter ou num gerador não deveria ser
+  transcrita à mão para o lugar onde os agentes olham.
+</Tip>

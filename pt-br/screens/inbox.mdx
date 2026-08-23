@@ -1,0 +1,68 @@
+---
+title: "A caixa de entrada"
+sidebarTitle: "Caixa de entrada"
+description: "Onde o Tylon travou, e o que aconteceu nos repositórios sem passar por ele. Uma fila de decisões, nunca uma cópia de estado."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/inbox.webp" alt="A caixa de entrada do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/inbox.webp" alt="A caixa de entrada do Tylon" />
+</Frame>
+
+O subtítulo da própria tela diz: *onde o sistema travou, e o que aconteceu nos
+repositórios sem passar por aqui.*
+
+## Por que não é uma lista de notificações
+
+Todo item é uma **decisão que alguém tem que tomar**. Nada chega aqui para ser
+lido e confirmado — chega porque o Tylon não conseguiu agir com segurança e não
+quis adivinhar.
+
+Os itens acima têm todos o mesmo formato: um pull request foi fechado no GitHub
+sem merge, e o card ainda o espera. O Tylon não vai decidir se aquilo foi um
+engano ou uma mudança de plano, então ele pergunta — **Parar de esperar este
+pull request** é a resposta, dada uma vez.
+
+<Note>
+  A linha de detalhe vem nas palavras do provedor e chega em inglês, porque é
+  a frase que o provedor escreveu. O rótulo acima dela — *PR fechado no
+  provedor* — é do Tylon.
+</Note>
+
+## O que aparece
+
+Doze tipos, e eles caem em três grupos.
+
+<AccordionGroup>
+  <Accordion title="O Tylon travou">
+    *Promoção recusada* — um merge que o provedor não fez, com o motivo dele.
+  </Accordion>
+
+  <Accordion title="Aconteceu alguma coisa sem nós">
+    *Branch criada fora do Tylon*, *A branch ligada sumiu*, *Merge feito fora
+    do Tylon*, *PR fechado no provedor*, *Uma conexão precisa ser refeita*.
+
+    O primeiro é o útil: alguém cortou uma branch num terminal com um nome que
+    casa com a convenção do time. O Tylon **oferece** ligá-la, e só oferece —
+    grudar a branch errada num card por palpite é pior do que não ter notado.
+  </Accordion>
+
+  <Accordion title="Alguma coisa está atrasada">
+    *Esperando há muito tempo*, *Um hotfix ainda não voltou*, *Quebrou em
+    produção*, e os três sobre agentes — um que não conseguiu terminar, um que
+    ofereceu uma mudança, um que parou de responder pelo próprio pull request.
+  </Accordion>
+</AccordionGroup>
+
+## Ela se esvazia sozinha
+
+A maioria destes é **derivada**: lida do estado que descrevem em vez de
+guardada, então eles somem quando aquele estado some. Dê push na branch e a
+recusa vai embora; faça o merge do back-merge e a dívida vai embora.
+
+Só três são linhas que você dispensa — uma sugestão de branch, uma branch que
+sumiu, e um erro que um monitor agrupou.
+
+É isso que faz uma caixa de entrada vazia valer confiança, e que faz dela a
+coisa honesta de se alertar: ela é, por construção, a lista do que uma máquina
+não conseguiu decidir.

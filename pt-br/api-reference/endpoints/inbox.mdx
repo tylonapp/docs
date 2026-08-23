@@ -1,0 +1,64 @@
+---
+title: "Caixa de entrada"
+sidebarTitle: "Caixa de entrada"
+description: "Leia o que está esperando por uma pessoa no Tylon — sugestões de branch, promoções recusadas, erros agrupados — e limpe."
+---
+
+A fila de decisões que uma máquina não conseguiu tomar. Ela nunca é uma cópia
+de estado, e é isso que faz dela a coisa honesta de se alertar: uma caixa de
+entrada vazia quer dizer que nada está esperando por um humano.
+
+## O que está esperando
+
+<ParamField path="GET /v1/inbox" type="endpoint">
+</ParamField>
+
+O que está esperando uma pessoa decidir.
+
+<ParamField query="projectId" type="string">
+  Qual produto. Opcional quando o quadro tem um projeto.
+</ParamField>
+
+Doze tipos aparecem aqui, e `kind` diz qual. A lista é do próprio produto —
+estes são os rótulos que a tela mostra.
+
+| `kind` | |
+| --- | --- |
+| `promotion_blocked` | Promoção recusada |
+| `branch_suggestion` | Branch criada fora do Tylon |
+| `branch_deleted` | A branch ligada sumiu |
+| `pr_merged_outside` | Merge feito fora do Tylon |
+| `pr_closed_outside` | PR fechado no provedor |
+| `waiting_stale` | Esperando há muito tempo |
+| `error_reported` | Quebrou em produção |
+| `connection_broken` | Uma conexão precisa ser refeita |
+| `backmerge_open` | Um hotfix ainda não voltou |
+| `agent_gave_up` | Um agente não conseguiu terminar |
+| `proposal_waiting` | Um agente ofereceu uma mudança |
+| `agent_stopped_reacting` | Um agente parou de responder pelo pull request dele |
+
+`detail` carrega o porquê, nas palavras do provedor quando foi o provedor que
+as deu.
+
+<Note>
+  A maioria destes é **derivada**, não guardada — eles são lidos do estado que
+  descrevem, então vão embora quando ele vai. Só `branch_suggestion`,
+  `branch_deleted` e `error_reported` são linhas, e só esses podem ser
+  dispensados; o resto se limpa sozinho quando a coisa de que tratam é
+  resolvida.
+</Note>
+
+## Como limpar
+
+<ParamField path="POST /v1/inbox/{itemId}/adopt" type="endpoint" />
+
+Pegue uma branch que alguém cortou num terminal e torne-a a branch do card.
+
+<ParamField query="card" type="integer">
+  Qual card. Opcional — a caixa de entrada já adivinhou pela convenção de
+  nomes, e é assim que você desfaz o palpite.
+</ParamField>
+
+<ParamField path="DELETE /v1/inbox/{itemId}" type="endpoint" />
+
+Guarde o item sem agir sobre ele. Os dois respondem `204`.

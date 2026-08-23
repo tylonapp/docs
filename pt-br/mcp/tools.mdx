@@ -1,0 +1,78 @@
+---
+title: "O que as ferramentas fazem"
+sidebarTitle: "Ferramentas"
+description: "As 65 ferramentas que o servidor MCP do Tylon oferece, pelo que servem: cards, o quadro, a caixa de entrada, páginas, releases, agentes e configuração."
+---
+
+Sessenta e cinco ferramentas. Você não precisa decorá-las — o editor lista e o modelo escolhe. O que vale saber é o formato do dia para o qual elas foram escritas.
+
+## O dia
+
+<Steps>
+  <Step title="Ver o que tem">
+    `my_work` ou `find_cards`, depois `read_card` para ver um por inteiro.
+  </Step>
+  <Step title="Antes de cortar uma branch">
+    `branch_for_card`. Ela responde com o nome que a convenção do time dá — e uma branch com qualquer outro nome é invisível para o quadro, então nunca chega ao card para o qual ela foi feita.
+  </Step>
+  <Step title="Depois de dar push">
+    `read_inbox`, depois `adopt_branch` para ligá-la.
+  </Step>
+  <Step title="Mover o card">
+    `move_card` é o que executa Git. Dependendo de onde o card cai, ela corta uma branch, abre um pull request ou faz merge de um.
+  </Step>
+</Steps>
+
+<Note>
+  Nada aqui lê um arquivo ou roda um comando. O Tylon guarda o trabalho — os cards, o fluxo, as branches que cada um carrega, os releases em que eles saem. O código está na sua máquina, e lê-lo e editá-lo é tarefa do seu editor.
+</Note>
+
+## As duas que você não consegue localmente
+
+`read_checks` e `read_reviews`. O build rodou no provedor e as revisões ficaram lá, então nenhuma quantidade de olhar para a sua cópia local responde qualquer uma das duas.
+
+A API pública também tem as duas, em JSON em vez de frases — veja [Checks e revisões](/pt-br/api-reference/endpoints/forge).
+
+## Por grupo
+
+<AccordionGroup>
+  <Accordion title="Cards — 19 ferramentas">
+    `my_work` `find_cards` `read_card` `read_timeline` `branch_for_card` `read_checks` `read_reviews` `create_card` `update_card` `move_card` `comment` `link_repository` `open_pull_request` `remember` `read_diff` `edit_comment` `delete_comment` `unlink_repository` `delete_card`
+  </Accordion>
+
+  <Accordion title="Quadro e projetos — 16 ferramentas">
+    `read_board` `read_flow` `read_backlog` `list_projects` `create_project` `update_project` `delete_project` `list_labels` `create_label` `update_label` `delete_label` `list_features` `create_feature` `update_feature` `delete_feature` `set_flow`
+  </Accordion>
+
+  <Accordion title="Releases e trunk — 10 ferramentas">
+    `list_releases` `read_trunk` `create_release` `set_release_cards` `freeze_release` `unfreeze_release` `promote_release` `cherry_pick` `complete_release` `delete_release`
+  </Accordion>
+
+  <Accordion title="Configuração — 8 ferramentas">
+    `list_members` `invite_member` `change_member_role` `list_repositories` `list_connectable_repositories` `add_repository` `connect_git_url` `list_credentials`
+  </Accordion>
+
+  <Accordion title="Agentes — 5 ferramentas">
+    `list_agents` `list_proposals` `approve_proposal` `reject_proposal` `list_runs`
+  </Accordion>
+
+  <Accordion title="Páginas — 4 ferramentas">
+    `list_docs` `read_doc` `write_doc` `delete_doc`
+  </Accordion>
+
+  <Accordion title="Caixa de entrada — 3 ferramentas">
+    `read_inbox` `adopt_branch` `dismiss_inbox_item`
+  </Accordion>
+</AccordionGroup>
+
+## Como é uma recusa
+
+Um "não" volta como uma frase no resultado normal da ferramenta, não como erro de protocolo — "isto precisa do papel maintainer", "o PR abre no primeiro push". Isso é deliberado: um modelo lê frases, e um erro onde deveria haver uma resposta é um cliente que não renderiza nada.
+
+É também a diferença em relação à [API pública](/pt-br/api-reference/errors), onde uma recusa é um código de status porque quem lê é um programa.
+
+## Duas regras que as ferramentas aplicam
+
+**Escopo.** Uma conexão aprovada para `workspace:read` é avisada disso quando uma escrita é tentada, em vez de falhar no meio do caminho.
+
+**Papel, ao vivo.** Verificado por quadro a cada chamada, contra a sua participação como ela é agora — não como era quando você conectou.

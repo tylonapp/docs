@@ -1,0 +1,33 @@
+---
+title: "Etiquetas"
+sidebarTitle: "Etiquetas"
+description: "Leia e escreva as etiquetas de um quadro do Tylon."
+---
+
+Member. As etiquetas são do quadro, compartilhadas entre os projetos dele.
+
+## Como ler e escrever
+
+Member.
+
+<ParamField path="POST /v1/labels" type="endpoint" />
+
+<ParamField body="name" type="string" required />
+<ParamField body="color" type="string">
+  Um dos nomes da paleta, não um valor hexadecimal.
+</ParamField>
+
+```json
+{
+  "id": "84842099970805746",
+  "name": "needs-migration",
+  "color": "amber",
+  "taskCount": 0
+}
+```
+
+<ParamField path="PATCH /v1/labels/{labelId}" type="endpoint" />
+<ParamField path="DELETE /v1/labels/{labelId}" type="endpoint" />
+
+Apagar tira a etiqueta de todos os cards de uma vez. `taskCount` é quantos
+seriam.

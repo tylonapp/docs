@@ -1,0 +1,110 @@
+---
+title: "Configurações"
+sidebarTitle: "Configurações"
+description: "Quem está no quadro e o que o papel de cada um permite, as regras que fazem a metade mecânica do trabalho, e as credenciais que deixam algo que não é um navegador entrar."
+---
+
+Quatro abas: **Geral**, **Pessoas**, **Regras** e **Erros**. As três abaixo são
+as que mudam o que outras pessoas — e outras coisas — podem fazer aqui.
+
+## Pessoas
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/members.webp" alt="Pessoas de um workspace do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/members.webp" alt="Pessoas de um workspace do Tylon" />
+</Frame>
+
+*O papel define o que cada pessoa pode fazer — e para quais status ela pode
+mover um card.* Essa segunda metade é a que vale ler duas vezes: um papel aqui
+não é uma etiqueta, é a resposta que o quadro dá quando alguém arrasta um card
+para **In production**.
+
+<ResponseField name="Dono">
+  O workspace é dele, inclusive quem mais o tem.
+</ResponseField>
+
+<ResponseField name="Mantenedor">
+  Promove. Os estágios que fazem merge em `main` nomeiam `Mantenedor` como
+  papel mínimo [no quadro](/pt-br/screens/board).
+</ResponseField>
+
+<ResponseField name="Membro">
+  Faz o trabalho: inicia cards, dá push em branches, abre pull requests.
+</ResponseField>
+
+<ResponseField name="Observador">
+  Lê.
+</ResponseField>
+
+**Iris** e **Otto** estão nesta lista com papéis próprios. [Um
+agente](/pt-br/screens/agents) é membro, então a mesma tabela responde "o que
+este agente pode fazer" sem um segundo modelo de permissão para manter em dia
+com o primeiro.
+
+Convites são um link que você entrega — o Tylon monta e não envia o e-mail.
+
+<Warning>
+  O servidor é a autoridade. A interface esconde o que um papel não pode fazer,
+  e esconder um botão é conveniência, nunca autorização — o mesmo movimento
+  feito pela API ou pelo servidor MCP é recusado do mesmo jeito.
+</Warning>
+
+## Regras
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/rules.webp" alt="Regras de automação no Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/rules.webp" alt="Regras de automação no Tylon" />
+</Frame>
+
+*A metade mecânica do trabalho: atribuir, etiquetar, priorizar, estacionar,
+dizer algo.* Cada regra se lê como uma frase — **Quando** … **então** … — e a
+linha abaixo dela diz se ela já rodou alguma vez.
+
+```
+Quando uma promoção é recusada          — então marcar como aguardando, adicionar uma etiqueta
+Quando uma etiqueta é adicionada · security — então definir a prioridade
+Quando um card fica parado por 3 dias · In review — então escrever no card
+```
+
+O terceiro gatilho é o que a maioria dos quadros não consegue expressar. *Ficar
+parado* não é um evento: nada aconteceu, e nada acontecer por três dias é
+exatamente a coisa que uma fila de revisão precisa que alguém note.
+
+<Note>
+  Tudo que exige julgamento é uma ação só — **acordar um agente** — porque
+  regra que pensa é regra que ninguém consegue prever. Quando uma regra age,
+  ela age como quem a escreveu, e a história do card nomeia a regra que agiu.
+</Note>
+
+## Credenciais da API
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/api-credentials.webp" alt="Criando uma credencial da API do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/api-credentials.webp" alt="Criando uma credencial da API do Tylon" />
+</Frame>
+
+Como algo que não é um navegador lê e escreve aqui — um script de deploy, uma
+página de status, uma planilha. Ele traz um client id e um segredo em vez de
+uma pessoa passando por um login.
+
+<ResponseField name="Boards que ela alcança">
+  Um ou vários, cada um com o seu papel, do mesmo jeito que você conecta um
+  editor. Em cada quadro ela pode fazer o que você marcou e nunca mais do que
+  você tem lá — e ela mantém isso aconteça o que acontecer com você.
+</ResponseField>
+
+<ResponseField name="Escopos">
+  `read` está sempre lá. `write` deixa abrir cards, movê-los, cortar branches e
+  promover releases, cada escrita levando um `Idempotency-Key`.
+</ResponseField>
+
+O segredo é mostrado **uma vez**, quando é criado. Não há como mostrá-lo depois
+sem guardá-lo legível, então tenha onde guardar antes de apertar o botão. Para
+trocar, crie um segundo segredo, mova a integração para ele, e depois revogue o
+antigo — os dois ficam vivos nesse meio-tempo, então nada fica fora do ar
+durante a troca.
+
+<Card title="A referência da API" icon="code" href="/pt-br/api-reference/authentication">
+  O que enviar, em qual quadro uma requisição cai, e como as escritas
+  continuam seguras de repetir.
+</Card>

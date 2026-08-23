@@ -1,0 +1,62 @@
+---
+title: "API pública do Tylon"
+sidebarTitle: "Introdução"
+description: "URL base, o que a API lê e escreve, como um quadro é escolhido, e o limite de requisições. A referência para qualquer coisa que chegue ao Tylon sem um navegador."
+---
+
+```text
+https://api.tylon.app/v1
+```
+
+Toda requisição leva uma credencial num header `Authorization`, responde em JSON, e diz o que aconteceu com um código de status HTTP.
+
+## O que ela faz hoje
+
+**Ela lê e escreve.** Leituras não precisam de nada além da credencial. Escritas precisam do escopo `write` e de um `Idempotency-Key` — mover um card executa Git, e uma nova tentativa que não sabe distinguir "falhou" de "a resposta se perdeu" não pode ter permissão de fazer merge duas vezes. Veja [Escrever](/pt-br/api-reference/writing).
+
+Duas escritas estão deliberadamente ausentes: aprovar a proposta de um agente e dar acesso a um quadro. As duas pertencem a uma pessoa com sessão, pelos motivos que aquela página explica.
+
+## O formato de uma chamada
+
+```bash
+curl "https://api.tylon.app/v1/board?projectId=83729280726599954" \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 84415731592203229"
+```
+
+<ResponseField name="Authorization" type="header" required>
+  `Bearer` seguido do secret, que começa com `tyl_sk_`. Veja [Autenticação](/pt-br/api-reference/authentication).
+</ResponseField>
+
+<ResponseField name="X-Tylon-Workspace" type="header">
+  O id do quadro sobre o qual a chamada é. Opcional quando a credencial alcança um só. Veja [Escolher um quadro](/pt-br/api-reference/workspaces).
+</ResponseField>
+
+<ResponseField name="projectId" type="query">
+  Qual produto dentro daquele quadro. Opcional quando o quadro tem um projeto, obrigatório quando tem vários — as colunas do quadro pertencem a um projeto, então "o quadro do time inteiro" não é uma coisa que dê para desenhar.
+</ResponseField>
+
+## Tudo é endereçado por id
+
+Ids são **strings**, não números. São valores de 64 bits, e um parser de JSON que os lê como número perde os dígitos baixos em silêncio — então eles são enviados entre aspas, e devem continuar entre aspas na volta.
+
+Não existe slug nem nome em lugar nenhum da requisição. Um nome é uma coisa que alguém renomeia numa terça-feira e um slug é uma coisa que duas organizações podem compartilhar; qualquer um dos dois deixaria uma integração dar errado caladamente. `/v1/me` é de onde os ids vêm.
+
+Números de card são a exceção e são inteiros simples, porque são contadores por quadro e não ids: `#7` num quadro e `#7` em outro são cards diferentes, e uma credencial só alcança os seus.
+
+## Limite de requisições
+
+120 requisições por minuto, **por credencial**. Acima disso, `429`.
+
+Contado pela credencial e não pelo endereço de onde ela vem, que é o que faz
+o número significar alguma coisa: duas integrações num mesmo runner de CI não
+se estrangulam, e uma integração espalhada por cem máquinas não ganha cem
+orçamentos.
+
+Não existe faixa por plano. Se você precisa de mais para algo real, diga —
+em vez de emitir credenciais extras para contornar. O limite é uma proteção
+contra desgoverno, não uma alavanca.
+
+## Versionamento
+
+O caminho carrega a versão. `/v1` não vai mudar de forma embaixo de você: campos novos podem aparecer, e qualquer coisa que quebraria quem lê ganha uma versão nova em vez de uma edição silenciosa.

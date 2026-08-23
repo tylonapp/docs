@@ -1,0 +1,97 @@
+---
+title: "Checks e revisões"
+sidebarTitle: "Checks e revisões"
+description: "O que o CI disse sobre as branches de um card do Tylon e o que os revisores deixaram nos pull requests dele — as duas coisas que aconteceram no provedor e não aqui."
+---
+
+As duas coisas que você não consegue obter da sua própria máquina: o build
+rodou no provedor, e as revisões ficaram lá.
+
+As duas são perguntadas **ao vivo** em vez de lidas do que um webhook por
+acaso deixou, porque "está verde *agora*?" é a pergunta de quem está travado
+esperando.
+
+## Checks
+
+<ParamField path="GET /v1/cards/{number}/checks" type="endpoint" />
+
+Uma entrada por repositório em que o card tem um pull request aberto.
+
+```json
+[
+  {
+    "repository": "acme/api",
+    "branchName": "feature/7-rotate-the-signing-key",
+    "runs": [
+      {
+        "id": "4471",
+        "name": "build",
+        "state": "failing",
+        "url": "https://github.com/acme/api/runs/4471",
+        "summary": "2 tests failed",
+        "notes": [
+          {
+            "path": "src/keys.ts",
+            "line": 88,
+            "level": "failure",
+            "message": "expected the old key to be revoked"
+          }
+        ]
+      }
+    ],
+    "error": null
+  }
+]
+```
+
+<ResponseField name="notes" type="object[]">
+  O arquivo e a linha para os quais um check que falhou apontou — a parte útil
+  de um build vermelho. Colhidas só para execuções que falharam, e limitadas a
+  vinte: um build que falhou quinhentas vezes não são quinhentas coisas para
+  ler.
+</ResponseField>
+
+## Revisões
+
+<ParamField path="GET /v1/cards/{number}/reviews" type="endpoint" />
+
+```json
+[
+  {
+    "repository": "acme/api",
+    "prNumber": 412,
+    "reviews": [
+      { "author": "marina", "state": "changes_requested", "body": "The key is still logged." }
+    ],
+    "error": null
+  }
+]
+```
+
+## Quando um repositório não pode ser perguntado
+
+Um card pode tocar três repositórios em que uma conexão expirou. Esse volta
+carregando o motivo; os outros dois continuam respondendo.
+
+```json
+[
+  { "repository": "acme/api", "runs": [], "error": null },
+  { "repository": "acme/legacy", "runs": null, "error": "Not Found" }
+]
+```
+
+<Warning>
+  `runs: null` com um `error` **não** é a mesma coisa que `runs: []`. O
+  primeiro é o provedor não respondendo; o segundo é o provedor dizendo que
+  nada está rodando. Tratar os dois igual é como um painel reporta um build
+  verde que ninguém nunca rodou.
+</Warning>
+
+Quem recebesse um único `500` para o conjunto inteiro não aprenderia nada
+sobre nenhum dos dois repositórios, e é por isso que a falha é por entrada.
+
+## Um card sem nada aberto
+
+Uma lista vazia, não um `404`. O card existe e nenhum pull request foi aberto
+nele — o que é uma resposta, e diferente de "não existe esse card", que
+continua sendo `404`.

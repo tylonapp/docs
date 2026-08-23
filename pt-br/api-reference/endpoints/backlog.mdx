@@ -1,0 +1,24 @@
+---
+title: "Backlog"
+sidebarTitle: "Backlog"
+description: "Leia o backlog do Tylon — os rascunhos atrás de um quadro, que não têm branch e não tocam no Git."
+---
+
+Rascunhos. Um título, uma descrição, uma discussão, e nenhum Git — nada aqui
+tem branch, porque iniciar um card é o ato deliberado que corta uma.
+
+É uma lista e não uma coluna, e cresce sem limite: reordene, busque, escolha
+de dentro dela.
+
+## Como ler
+
+<ParamField path="GET /v1/backlog" type="endpoint">
+</ParamField>
+
+Rascunhos: um título, uma descrição, uma discussão, e nenhum Git. Nada aqui tem branch, porque iniciar um card é o ato deliberado que corta uma.
+
+<ParamField query="projectId" type="string">
+  A mesma regra do quadro.
+</ParamField>
+
+Responde com um array de cards no mesmo formato que `/v1/cards/{number}` usa.

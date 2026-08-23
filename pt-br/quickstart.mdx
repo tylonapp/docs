@@ -1,0 +1,62 @@
+---
+title: "Ler um quadro a partir de um script em cinco minutos"
+description: "Crie uma credencial da API, chame a API do Tylon com ela e leia um quadro. Cobre o único momento em que o segredo é legível e como escolher um quadro."
+sidebarTitle: "Comece rápido"
+---
+
+No fim disto você terá uma credencial e um quadro na sua tela, lido por `curl` em vez de por um navegador.
+
+<Steps>
+  <Step title="Crie uma credencial">
+    Abra **Configurações → Credenciais da API**. É preciso tocar a organização — o mesmo papel que lê o registro de auditoria.
+
+    Dê a ela um nome que você vá reconhecer daqui a seis meses (`o script de deploy`, não `teste`), marque os quadros que ela deve alcançar e escolha um papel em cada um. Os papéis oferecidos param no que você tem naquele quadro: não dá para entregar mais do que você tem.
+
+    <Warning>
+      O segredo aparece uma vez, na tela que o cria, e não existe endpoint que responda com ele de novo. Tenha onde guardá-lo antes de apertar o botão.
+    </Warning>
+  </Step>
+  <Step title="Confirme que funciona, e descubra os ids dos seus quadros">
+    ```bash
+    curl https://api.tylon.app/v1/me \
+      -H "Authorization: Bearer $TYLON_SECRET"
+    ```
+
+    ```json
+    {
+      "clientId": "tyl_id_1yIrdcxW_gkz8XBY",
+      "name": "the deploy script",
+      "scopes": ["read"],
+      "boards": [
+        {
+          "workspaceId": "84415731592203229",
+          "organizationId": "84415731491539931",
+          "role": "viewer"
+        }
+      ],
+      "answering": null
+    }
+    ```
+
+    Esta também é a listagem: `boards` é exatamente o conjunto de ids que a próxima chamada vai aceitar. É o único endpoint que nunca pede que você escolha.
+  </Step>
+  <Step title="Leia um quadro">
+    ```bash
+    curl https://api.tylon.app/v1/board \
+      -H "Authorization: Bearer $TYLON_SECRET" \
+      -H "X-Tylon-Workspace: 84415731592203229"
+    ```
+
+    Se a credencial alcança exatamente um quadro, o header é opcional. Se ela alcança vários e você o deixa de fora, a API diz isso e lista os ids em vez de adivinhar.
+  </Step>
+</Steps>
+
+## A seguir
+
+<Card title="Credenciais e rotação" icon="key" href="/pt-br/api-reference/authentication">
+  Dois segredos vivos ao mesmo tempo, e por que esse é justamente o ponto.
+</Card>
+
+<Card title="Todos os endpoints" icon="list" href="/pt-br/api-reference/endpoints/board">
+  O quadro, os cards, os releases, a caixa de entrada.
+</Card>

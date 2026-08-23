@@ -1,0 +1,55 @@
+---
+title: "Páginas"
+sidebarTitle: "Páginas"
+description: "Leia e escreva as páginas que os agentes do Tylon leem antes de trabalhar — convenções, o formato de uma migration, no que não mexer."
+---
+
+As páginas que os agentes de fato leem antes de tocar em qualquer coisa:
+convenções, o formato de uma migration, do que não chegar perto.
+
+## Como ler e escrever
+
+Member. Estas são as páginas que os agentes leem antes de trabalhar —
+convenções, o formato de uma migration, no que não mexer.
+
+<ParamField path="POST /v1/docs" type="endpoint" />
+
+<ParamField body="title" type="string" required>
+  O slug é derivado dele, e o acompanha se o título mudar.
+</ParamField>
+<ParamField body="body" type="string">
+  Markdown. `[[wiki links]]` entre páginas são resolvidos, e os que não apontam
+  para lugar nenhum voltam em `dangling`.
+</ParamField>
+<ParamField body="parentId" type="string">
+  Páginas se aninham.
+</ParamField>
+
+```json
+{
+  "id": "84842202777391096",
+  "title": "Branch naming",
+  "slug": "branch-naming",
+  "parentId": null,
+  "position": 0,
+  "body": "Cut from `main`.",
+  "createdBy": "docs capture",
+  "updatedBy": "docs capture",
+  "backlinks": [],
+  "dangling": [],
+  "tasks": []
+}
+```
+
+<ParamField path="PATCH /v1/docs/{slug}" type="endpoint" />
+<ParamField path="DELETE /v1/docs/{slug}" type="endpoint" />
+
+Endereçadas por slug e não por id, porque é isso que um link em outra página
+carrega.
+
+<Note>
+  Este é o único lugar da API de escrita em que automatizar é obviamente
+  certo: uma convenção que já vive num gerador ou numa configuração de lint
+  não deveria ser transcrita à mão para o lugar onde os agentes olham, onde
+  ela vai desatualizar.
+</Note>

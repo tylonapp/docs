@@ -1,0 +1,53 @@
+---
+title: "Projetos"
+sidebarTitle: "Projetos"
+description: "Leia e escreva os projetos do Tylon — os produtos que um quadro entrega, cada um dono do seu fluxo, dos seus repositórios e dos seus releases."
+---
+
+Um produto que o time entrega. Ele é dono do próprio fluxo, dos repositórios
+de que é feito, dos cards que o movem e dos releases que o entregam — e um
+card pertence a exatamente um, que é por que tantas chamadas pedem um
+`projectId`.
+
+## Como ler
+
+<ParamField path="GET /v1/projects" type="endpoint">
+</ParamField>
+
+Os produtos dentro de um quadro. As colunas de um quadro pertencem a um projeto, então é isto que você lê para encontrar o `projectId` que as outras chamadas querem.
+
+```json
+[
+  {
+    "id": "83729280726599954",
+    "name": "Checkout",
+    "slug": "checkout",
+    "description": "",
+    "repositoryCount": 3,
+    "taskCount": 12,
+    "createdAt": "2026-08-20T01:10:16.135Z"
+  }
+]
+```
+
+## Como escrever
+
+Maintainer. Um projeto é um produto que o time entrega: ele é dono do próprio
+fluxo, dos repositórios de que é feito, e dos seus releases.
+
+<ParamField path="POST /v1/projects" type="endpoint" />
+
+<ParamField body="name" type="string" required />
+<ParamField body="slug" type="string">
+  Derivado do nome quando omitido.
+</ParamField>
+<ParamField body="description" type="string" />
+
+<ParamField path="PATCH /v1/projects/{projectId}" type="endpoint" />
+<ParamField path="DELETE /v1/projects/{projectId}" type="endpoint" />
+
+<Warning>
+  Um projeto novo começa a partir do fluxo de um que já existe e passa a ser
+  dono dele daí em diante. Criar um por script quer dizer que o fluxo herdado
+  é o que estava lá — confira antes de os cards começarem a andar por ele.
+</Warning>

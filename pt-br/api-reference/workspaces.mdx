@@ -1,0 +1,88 @@
+---
+title: "Escolher um quadro"
+sidebarTitle: "Escolher um quadro"
+description: "Uma credencial do Tylon pode alcançar vários quadros. O header X-Tylon-Workspace diz sobre qual deles a chamada é, por id do workspace."
+---
+
+Uma credencial alcança os quadros para os quais foi marcada — um ou vários. Toda chamada, exceto `/v1/me`, é sobre exatamente um deles, e diz qual num header.
+
+```bash
+curl https://api.tylon.app/v1/board \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 84415731592203229"
+```
+
+## Por que um header, e por que um id
+
+**Um header** porque isso pertence à credencial e não à requisição. O mesmo valor vai em toda chamada que a sua integração faz, e uma coisa que nunca varia não tem o que fazer numa URL que varia — isso também a mantém fora dos logs e dos históricos de navegador que registram caminhos.
+
+**Um id** porque um nome é uma coisa que alguém renomeia numa terça-feira, e um slug é uma coisa que duas organizações podem compartilhar. Qualquer um dos dois pode transformar uma integração que funciona numa integração muda — ou, pior, numa que agora lê outro quadro. Um id não tem como passar a significar outra coisa.
+
+<Note>
+  O [servidor MCP](/pt-br/mcp/connect) aceita `acme/product`, e isso não é uma incoerência. Lá existe uma pessoa digitando e um modelo lendo a recusa. Aqui não tem ninguém digitando nada.
+</Note>
+
+## Descobrir os ids
+
+`/v1/me` é a listagem, e a única chamada que nunca pede que você escolha.
+
+```bash
+curl https://api.tylon.app/v1/me -H "Authorization: Bearer $TYLON_SECRET"
+```
+
+```json
+{
+  "clientId": "tyl_id_1yIrdcxW_gkz8XBY",
+  "name": "the deploy script",
+  "scopes": ["read"],
+  "boards": [
+    {
+      "workspaceId": "84415731592203229",
+      "organizationId": "84415731491539931",
+      "role": "viewer"
+    },
+    {
+      "workspaceId": "83729280714017040",
+      "organizationId": "81904798345068545",
+      "role": "member"
+    }
+  ],
+  "answering": null
+}
+```
+
+`boards` é exatamente o conjunto de ids que o header vai aceitar. `answering` é qual quadro atendeu a chamada — sempre `null` aqui, porque esta rota responde com a lista em vez de responder de dentro dela.
+
+## Quando dá para omitir
+
+Quando a credencial alcança exatamente um quadro. Aí não há pergunta a fazer, e o header é opcional.
+
+Omitindo com vários, você recebe `400` com os ids:
+
+```json
+{
+  "message": "Say which workspace in the X-Tylon-Workspace header: 84415731592203229, 83729280714017040.",
+  "error": "Bad Request",
+  "statusCode": 400
+}
+```
+
+## As recusas
+
+<ResponseField name="Um nome no lugar de um id" type="400">
+  ```json
+  { "message": "X-Tylon-Workspace takes a workspace id, not a name. This credential reaches 84415731592203229, 83729280714017040." }
+  ```
+
+  Dito com todas as letras em vez de respondido como "não existe esse quadro", para que um slug colado por hábito não pareça um quadro que sumiu.
+</ResponseField>
+
+<ResponseField name="Um id que esta credencial não alcança" type="400">
+  ```json
+  { "message": "This credential does not reach workspace 12345678901234567. It reaches 84415731592203229, 83729280714017040." }
+  ```
+</ResponseField>
+
+## Quadros não vazam um no outro
+
+Um `projectId` que pertence a outro quadro é `404`, mesmo quando aquele quadro é um que a mesma credencial alcança. Números de card são por quadro: `/v1/cards/7` responde com o card #7 do quadro que está no seu header, e nunca com o de outro quadro.

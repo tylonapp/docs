@@ -1,0 +1,71 @@
+---
+title: "Credenciais, segredos e rotação"
+description: "Uma credencial da API do Tylon é um client id público e um segredo enviado como Bearer token. Dois segredos podem estar vivos ao mesmo tempo, e é isso que torna a rotação possível sem indisponibilidade."
+sidebarTitle: "Autenticação"
+---
+
+Uma credencial tem duas metades.
+
+<ResponseField name="client id" type="tyl_id_…">
+  Público. Ele circula em logs, em mensagens de erro e em conversas de suporte de propósito, para que falar sobre uma credencial nunca signifique mostrá-la.
+</ResponseField>
+
+<ResponseField name="secret" type="tyl_sk_…">
+  Não é público. Ele é a prova inteira, e é o que você envia.
+</ResponseField>
+
+```bash
+curl https://api.tylon.app/v1/me \
+  -H "Authorization: Bearer tyl_sk_…"
+```
+
+O client id não é enviado. A busca é pelo segredo sozinho, porque essa é a única metade que prova alguma coisa.
+
+## Criar uma
+
+**Configurações → Credenciais da API**, por alguém que toca a organização.
+
+Elas vivem na organização e não dentro de um workspace porque uma credencial alcança quantos quadros tiverem sido marcados — uma tela dentro de um deles não conseguiria mostrar o que revogar iria parar.
+
+<Warning>
+  O segredo é mostrado uma vez, quando é criado, e guardado como hash. Não existe endpoint que responda com ele de novo, e não pode existir sem manter o segredo legível.
+</Warning>
+
+## O que ela pode fazer
+
+Cada quadro carrega o seu próprio papel, e ele nunca pode ser maior do que o papel que a pessoa que a emitiu tinha naquele quadro. Um viewer num produto e um owner em outro entrega exatamente isso.
+
+O papel **não** acompanha quem a emitiu depois. Um script de deploy não pode ganhar o poder de promover um release porque quem o configurou foi promovido, e não pode parar de funcionar no dia em que essa pessoa sai. Mudar o que uma credencial pode fazer é um ato deliberado sobre a credencial.
+
+## Rotação
+
+Uma credencial pode ter **dois segredos vivos ao mesmo tempo**, e o número é a funcionalidade. Com um só, toda rotação é uma janela em que a integração fica fora do ar — que é a razão de ninguém rotacionar.
+
+<Steps>
+  <Step title="Crie o segundo">
+    Na credencial, aperte rotacionar. Um segredo novo aparece, uma vez.
+  </Step>
+  <Step title="Mova a integração para ele">
+    Coloque-o onde o primeiro estiver. Os dois funcionam.
+  </Step>
+  <Step title="Veja ele ser usado">
+    A tela mostra o último uso por segredo. Quando ele passa para o novo, nada mais está segurando o antigo.
+  </Step>
+  <Step title="Revogue o primeiro">
+    Agora isso não custa nada.
+  </Step>
+</Steps>
+
+Revogar o último segredo que resta é recusado. Uma credencial que existe e não consegue autenticar é uma coisa pior de se ter do que uma que sumiu — revogue a credencial no lugar.
+
+## Revogar
+
+Revogar uma credencial para **todos** os segredos dela, em **todos** os quadros que ela alcança, de uma vez. A tela nomeia esses quadros antes de você confirmar.
+
+Uma credencial que alcança duas organizações pode ser revogada por qualquer uma das duas. Quem toca uma organização que ela consegue ler tem que conseguir parar essa leitura, sem precisar de uma conta em outro lugar para isso.
+
+## Manter um segredo em segredo
+
+- Ele vai numa variável de ambiente ou num cofre de secrets, nunca no repositório. O prefixo `tyl_sk_` é deliberado: é nele que um scanner de secrets casa.
+- Uma credencial por integração. Duas coisas dividindo uma significa que revogar qualquer uma derruba as duas.
+- Uma credencial que ninguém usa mostra um último uso velho. Essa é a que vale revogar.

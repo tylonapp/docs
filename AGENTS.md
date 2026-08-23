@@ -4,6 +4,11 @@
 
 - Documentation for **Tylon**, built on [Mintlify](https://mintlify.com)
 - Pages are MDX files with YAML frontmatter; configuration lives in `docs.json`
+- **Two languages, and the folder is the language.** English lives under
+  `en/`, Brazilian Portuguese under `pt-br/`, and every page exists in both.
+  A link inside a page stays inside its own language: `/en/screens/board` from
+  an English page, `/pt-br/screens/board` from a Portuguese one. Adding a page
+  means adding it in both and in both `navigation.languages` entries
 - The site covers the two ways something reaches a board without a browser:
   the **public API** (`api-reference/`) and the **MCP server** (`mcp/`), plus
   the product vocabulary both of them lean on (`concepts/`)
@@ -25,6 +30,28 @@ the mistake to avoid.
 - **connection** for what an editor holds over MCP
 - **forge**, or the provider's name, for GitHub and GitLab — the checks and
   the reviews live there, not here
+
+## Writing the Portuguese
+
+Brazilian Portuguese, and a translation of the English page rather than a
+different page — same headings, same order, same claims.
+
+Two habits, taken from the product's own `pt.ts`:
+
+- **The words a developer actually says stay as they are.** *Branch*, *pull
+  request*, *commit*, *deploy*, *merge*, *push*, *release*, *trunk*,
+  *workspace*, *card*. "Ramificação" is a correct translation and nobody on a
+  Brazilian team has said it out loud.
+- **The product's own words for its own screens.** *Quadro* for the board,
+  *Caixa de entrada* for the inbox, *Fluxo*, *Estágio*, *Papel*, *Segredo* for
+  a credential's secret, *Membro* / *Mantenedor* / *Dono* / *Observador* for
+  the roles. If a screenshot shows a word, the page uses that word.
+
+Screenshots come in a Portuguese set of their own — `/images/pt-light/` and
+`/images/pt-dark/`, taken with `DEMO_LOCALE=pt`. A Portuguese page never
+points at `/images/light/`. What the demo *data* says — card titles, stage
+names, page names — stays English, because that is what the seed writes and
+what a Brazilian team writing its repository in English actually sees.
 
 ## Style preferences
 

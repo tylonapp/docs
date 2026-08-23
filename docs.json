@@ -9,86 +9,184 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "tabs": [
+    "languages": [
       {
-        "tab": "Documentation",
-        "groups": [
+        "language": "en",
+        "default": true,
+        "tabs": [
           {
-            "group": "Get Started",
-            "pages": [
-              "index",
-              "quickstart"
+            "tab": "Documentation",
+            "groups": [
+              {
+                "group": "Get Started",
+                "pages": [
+                  "en/index",
+                  "en/quickstart"
+                ]
+              },
+              {
+                "group": "Core concepts",
+                "icon": "book-open",
+                "pages": [
+                  "en/concepts/cards",
+                  "en/concepts/flow",
+                  "en/concepts/releases"
+                ]
+              },
+              {
+                "group": "The screens",
+                "icon": "monitor",
+                "pages": [
+                  "en/screens/inbox",
+                  "en/screens/backlog",
+                  "en/screens/board",
+                  "en/screens/card",
+                  "en/screens/flow",
+                  "en/screens/trunk",
+                  "en/screens/releases",
+                  "en/screens/projects",
+                  "en/screens/docs",
+                  "en/screens/agents",
+                  "en/screens/runs",
+                  "en/screens/settings"
+                ]
+              },
+              {
+                "group": "MCP server",
+                "icon": "terminal",
+                "pages": [
+                  "en/mcp/connect",
+                  "en/mcp/tools"
+                ]
+              }
             ]
           },
           {
-            "group": "Core concepts",
-            "icon": "book-open",
-            "pages": [
-              "concepts/cards",
-              "concepts/flow",
-              "concepts/releases"
-            ]
-          },
-          {
-            "group": "The screens",
-            "icon": "monitor",
-            "pages": [
-              "screens/inbox",
-              "screens/backlog",
-              "screens/board",
-              "screens/card",
-              "screens/flow",
-              "screens/trunk",
-              "screens/releases",
-              "screens/projects",
-              "screens/docs",
-              "screens/agents",
-              "screens/runs",
-              "screens/settings"
-            ]
-          },
-          {
-            "group": "MCP server",
-            "icon": "terminal",
-            "pages": [
-              "mcp/connect",
-              "mcp/tools"
+            "tab": "API Reference",
+            "groups": [
+              {
+                "group": "Overview",
+                "pages": [
+                  "en/api-reference/introduction",
+                  "en/api-reference/authentication",
+                  "en/api-reference/workspaces",
+                  "en/api-reference/writing",
+                  "en/api-reference/errors"
+                ]
+              },
+              {
+                "group": "Endpoints",
+                "icon": "list",
+                "pages": [
+                  "en/api-reference/endpoints/account",
+                  "en/api-reference/endpoints/inbox",
+                  "en/api-reference/endpoints/backlog",
+                  "en/api-reference/endpoints/board",
+                  "en/api-reference/endpoints/cards",
+                  "en/api-reference/endpoints/forge",
+                  "en/api-reference/endpoints/releases",
+                  "en/api-reference/endpoints/trunk",
+                  "en/api-reference/endpoints/projects",
+                  "en/api-reference/endpoints/labels",
+                  "en/api-reference/endpoints/features",
+                  "en/api-reference/endpoints/docs"
+                ]
+              }
             ]
           }
         ]
       },
       {
-        "tab": "API Reference",
-        "groups": [
+        "language": "pt-BR",
+        "tabs": [
           {
-            "group": "Overview",
-            "pages": [
-              "api-reference/introduction",
-              "api-reference/authentication",
-              "api-reference/workspaces",
-              "api-reference/writing",
-              "api-reference/errors"
+            "tab": "Documentação",
+            "groups": [
+              {
+                "group": "Comece por aqui",
+                "pages": [
+                  "pt-br/index",
+                  "pt-br/quickstart"
+                ]
+              },
+              {
+                "group": "Conceitos",
+                "icon": "book-open",
+                "pages": [
+                  "pt-br/concepts/cards",
+                  "pt-br/concepts/flow",
+                  "pt-br/concepts/releases"
+                ]
+              },
+              {
+                "group": "As telas",
+                "icon": "monitor",
+                "pages": [
+                  "pt-br/screens/inbox",
+                  "pt-br/screens/backlog",
+                  "pt-br/screens/board",
+                  "pt-br/screens/card",
+                  "pt-br/screens/flow",
+                  "pt-br/screens/trunk",
+                  "pt-br/screens/releases",
+                  "pt-br/screens/projects",
+                  "pt-br/screens/docs",
+                  "pt-br/screens/agents",
+                  "pt-br/screens/runs",
+                  "pt-br/screens/settings"
+                ]
+              },
+              {
+                "group": "Servidor MCP",
+                "icon": "terminal",
+                "pages": [
+                  "pt-br/mcp/connect",
+                  "pt-br/mcp/tools"
+                ]
+              }
             ]
           },
           {
-            "group": "Endpoints",
-            "icon": "list",
-            "pages": [
-              "api-reference/endpoints/account",
-              "api-reference/endpoints/inbox",
-              "api-reference/endpoints/backlog",
-              "api-reference/endpoints/board",
-              "api-reference/endpoints/cards",
-              "api-reference/endpoints/forge",
-              "api-reference/endpoints/releases",
-              "api-reference/endpoints/trunk",
-              "api-reference/endpoints/projects",
-              "api-reference/endpoints/labels",
-              "api-reference/endpoints/features",
-              "api-reference/endpoints/docs"
+            "tab": "Referência da API",
+            "groups": [
+              {
+                "group": "Visão geral",
+                "pages": [
+                  "pt-br/api-reference/introduction",
+                  "pt-br/api-reference/authentication",
+                  "pt-br/api-reference/workspaces",
+                  "pt-br/api-reference/writing",
+                  "pt-br/api-reference/errors"
+                ]
+              },
+              {
+                "group": "Endpoints",
+                "icon": "list",
+                "pages": [
+                  "pt-br/api-reference/endpoints/account",
+                  "pt-br/api-reference/endpoints/inbox",
+                  "pt-br/api-reference/endpoints/backlog",
+                  "pt-br/api-reference/endpoints/board",
+                  "pt-br/api-reference/endpoints/cards",
+                  "pt-br/api-reference/endpoints/forge",
+                  "pt-br/api-reference/endpoints/releases",
+                  "pt-br/api-reference/endpoints/trunk",
+                  "pt-br/api-reference/endpoints/projects",
+                  "pt-br/api-reference/endpoints/labels",
+                  "pt-br/api-reference/endpoints/features",
+                  "pt-br/api-reference/endpoints/docs"
+                ]
+              }
             ]
           }
-        ]
+        ],
+        "navbar": {
+          "primary": {
+            "type": "button",
+            "label": "Abrir o Tylon",
+            "href": "https://dash.tylon.app"
+          }
+        }
       }
     ]
   },
@@ -123,7 +221,187 @@
   "redirects": [
     {
       "source": "/api-reference/endpoints/me",
-      "destination": "/api-reference/endpoints/account",
+      "destination": "/en/api-reference/endpoints/account",
+      "permanent": true
+    },
+    {
+      "source": "/index",
+      "destination": "/en/index",
+      "permanent": true
+    },
+    {
+      "source": "/quickstart",
+      "destination": "/en/quickstart",
+      "permanent": true
+    },
+    {
+      "source": "/concepts/cards",
+      "destination": "/en/concepts/cards",
+      "permanent": true
+    },
+    {
+      "source": "/concepts/flow",
+      "destination": "/en/concepts/flow",
+      "permanent": true
+    },
+    {
+      "source": "/concepts/releases",
+      "destination": "/en/concepts/releases",
+      "permanent": true
+    },
+    {
+      "source": "/screens/inbox",
+      "destination": "/en/screens/inbox",
+      "permanent": true
+    },
+    {
+      "source": "/screens/backlog",
+      "destination": "/en/screens/backlog",
+      "permanent": true
+    },
+    {
+      "source": "/screens/board",
+      "destination": "/en/screens/board",
+      "permanent": true
+    },
+    {
+      "source": "/screens/card",
+      "destination": "/en/screens/card",
+      "permanent": true
+    },
+    {
+      "source": "/screens/flow",
+      "destination": "/en/screens/flow",
+      "permanent": true
+    },
+    {
+      "source": "/screens/trunk",
+      "destination": "/en/screens/trunk",
+      "permanent": true
+    },
+    {
+      "source": "/screens/releases",
+      "destination": "/en/screens/releases",
+      "permanent": true
+    },
+    {
+      "source": "/screens/projects",
+      "destination": "/en/screens/projects",
+      "permanent": true
+    },
+    {
+      "source": "/screens/docs",
+      "destination": "/en/screens/docs",
+      "permanent": true
+    },
+    {
+      "source": "/screens/agents",
+      "destination": "/en/screens/agents",
+      "permanent": true
+    },
+    {
+      "source": "/screens/runs",
+      "destination": "/en/screens/runs",
+      "permanent": true
+    },
+    {
+      "source": "/screens/settings",
+      "destination": "/en/screens/settings",
+      "permanent": true
+    },
+    {
+      "source": "/mcp/connect",
+      "destination": "/en/mcp/connect",
+      "permanent": true
+    },
+    {
+      "source": "/mcp/tools",
+      "destination": "/en/mcp/tools",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/introduction",
+      "destination": "/en/api-reference/introduction",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/authentication",
+      "destination": "/en/api-reference/authentication",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/workspaces",
+      "destination": "/en/api-reference/workspaces",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/writing",
+      "destination": "/en/api-reference/writing",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/errors",
+      "destination": "/en/api-reference/errors",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/endpoints/account",
+      "destination": "/en/api-reference/endpoints/account",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/endpoints/inbox",
+      "destination": "/en/api-reference/endpoints/inbox",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/endpoints/backlog",
+      "destination": "/en/api-reference/endpoints/backlog",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/endpoints/board",
+      "destination": "/en/api-reference/endpoints/board",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/endpoints/cards",
+      "destination": "/en/api-reference/endpoints/cards",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/endpoints/forge",
+      "destination": "/en/api-reference/endpoints/forge",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/endpoints/releases",
+      "destination": "/en/api-reference/endpoints/releases",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/endpoints/trunk",
+      "destination": "/en/api-reference/endpoints/trunk",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/endpoints/projects",
+      "destination": "/en/api-reference/endpoints/projects",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/endpoints/labels",
+      "destination": "/en/api-reference/endpoints/labels",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/endpoints/features",
+      "destination": "/en/api-reference/endpoints/features",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/endpoints/docs",
+      "destination": "/en/api-reference/endpoints/docs",
       "permanent": true
     }
   ]

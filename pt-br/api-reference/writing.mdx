@@ -1,0 +1,141 @@
+---
+title: "Escrever"
+sidebarTitle: "Escrever"
+description: "A API do Tylon escreve com o escopo write e um Idempotency-Key obrigatório, para que uma requisição repetida não execute Git duas vezes. O que a credencial assina, e o que ela não tem permissão de fazer."
+---
+
+Qualquer coisa que não seja `GET` precisa de duas coisas além da credencial: o escopo `write` e um `Idempotency-Key`.
+
+```bash
+curl -X POST https://api.tylon.app/v1/cards \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 84415731592203229" \
+  -H "Idempotency-Key: deploy-2026-08-22-run-4471" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Rotate the signing key"}'
+```
+
+## A chave é obrigatória, não oferecida
+
+Mover um card executa Git. Um cliente cuja requisição estourou o tempo não sabe distinguir "falhou" de "a resposta se perdeu" — e o único jeito de descobrir é perguntar de novo, que é exatamente o que não é seguro fazer quando perguntar de novo pode fazer um segundo merge.
+
+Uma proteção opcional contra um merge duplicado silencioso é uma proteção que quem precisava dela não usou. Então ela é obrigatória em toda escrita, inclusive nas que não tocam repositório nenhum, porque uma regra da qual você precisa lembrar quando ela importa é uma regra da qual você não vai lembrar quando ela importar.
+
+<ResponseField name="Idempotency-Key" type="header" required>
+  Qualquer string de 16 a 255 caracteres, de `A-Z a-z 0-9 _ . : -`. Faça-a única por tentativa-que-você-quer-dizer: um id de execução, um id de job, um hash da coisa que causou a escrita. Não um timestamp que você regera ao repetir — isso anula tudo.
+</ResponseField>
+
+### O que cada resposta quer dizer
+
+<Steps>
+  <Step title="Primeira vez: executa">
+    A resposta é guardada sob a chave.
+  </Step>
+  <Step title="Mesma chave, mesma requisição: repete a resposta">
+    Você recebe a primeira resposta de volta, com `Idempotent-Replay: true`, e nada executa. É para este caso que o mecanismo inteiro existe.
+  </Step>
+  <Step title="Mesma chave, requisição diferente: 409">
+    Uma chave usada para duas requisições diferentes é um bug no seu código, e servir a resposta da outra requisição esconderia isso atrás de um sucesso.
+  </Step>
+  <Step title="Mesma chave enquanto a primeira ainda roda: 409">
+    Espere. Rodar as duas seria o merge duplicado com etapas a mais.
+  </Step>
+</Steps>
+
+<Note>
+  Uma tentativa que falha **libera** a chave. Se uma escrita for rejeitada por um campo errado, conserte o campo e mande de novo na mesma chave — você não devia ter que inventar uma nova para corrigir um erro de digitação.
+</Note>
+
+As chaves ficam guardadas por 24 horas, e são limitadas à sua credencial: duas integrações escolhendo `nightly` não são a mesma requisição.
+
+## A credencial assina o que faz
+
+Uma credencial de escrita é **membro** dos quadros que alcança — ela tem um usuário próprio, do mesmo jeito que um agente tem. Então o card que ela cria diz `createdBy: the deploy script`, a linha do tempo dele lê `status_changed → the deploy script`, e um comentário que ela escreve é dela.
+
+É esse o ponto. Um quadro cujo histórico diz que _alguém_ moveu um card é um quadro que não consegue responder a única pergunta que vale fazer depois que algo dá errado.
+
+## O que ela pode fazer
+
+Dois portões, e eles respondem perguntas diferentes.
+
+<ResponseField name="escopo" type="403">
+  Uma credencial emitida só para leitura ouve isso: `This credential was issued for reading only. Issue one with the write scope.`
+</ResponseField>
+
+<ResponseField name="papel" type="403">
+  Por rota, contra o papel que esta credencial tem no quadro do header: `That needs the member role or higher, and this credential holds viewer on workspace 83729280714017040.`
+</ResponseField>
+
+Os papéis são os do próprio produto, então significam aqui o que significam na tela. Criar um card ou uma etiqueta é de member; apagar um projeto, congelar um release e concluir um são de maintainer.
+
+## Mover um card
+
+A escrita que executa Git, e a que se lê com atenção.
+
+```bash
+curl -X POST https://api.tylon.app/v1/cards/7/move \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 84415731592203229" \
+  -H "Idempotency-Key: ci-run-88213" \
+  -H "Content-Type: application/json" \
+  -d '{"statusId": "83729308086044949", "index": 0}'
+```
+
+```json
+{
+  "task": { "number": 7, "statusId": "83729308086044949", "blocked": null },
+  "promoted": [
+    { "fullName": "acme/api", "targetBranch": "main", "prNumber": 412 }
+  ]
+}
+```
+
+Dois fatos, não um: o card se moveu, **e** estes repositórios fizeram merge. Quem age sobre o segundo não deveria ter que inferi-lo a partir do primeiro.
+
+<Warning>
+  Uma promoção recusada é **409**, não 400. A requisição estava certa e o mundo disse não — conflitos, checks vermelhos, nada para fazer merge. O card fica exatamente onde estava, carregando o motivo, e a mensagem são as palavras do próprio provedor.
+</Warning>
+
+`statusId` vem de `/v1/board`, onde cada coluna carrega o próprio id e o `minRole` necessário para mover um card para dentro dela.
+
+## Releases
+
+A metade que mais vale automatizar, porque estes são os gestos que uma pipeline tem motivo para rodar por agendamento em vez de na mão.
+
+|  |  |
+| --- | --- |
+| `POST /v1/releases` | member |
+| `PUT /v1/releases/{id}/cards` | member — a lista inteira, não acréscimos |
+| `POST /v1/releases/{id}/freeze` | maintainer — corta a branch |
+| `DELETE /v1/releases/{id}/freeze` | maintainer |
+| `POST /v1/releases/{id}/pick` | member — a única porta para dentro de um release congelado |
+| `POST /v1/releases/{id}/promote` | member |
+| `POST /v1/releases/{id}/complete` | maintainer — escreve as tags |
+| `DELETE /v1/releases/{id}` | maintainer |
+
+`promote` responde com um resultado em vez de falhar: um release de doze cards em que nove se moveram e três foram recusados é notícia, não erro. As recusas estão no corpo, cada uma nomeando o seu card e o repositório que disse não.
+
+## O resto
+
+|  |  |
+| --- | --- |
+| Cards | `POST /v1/cards`, `PATCH /v1/cards/{n}`, `DELETE /v1/cards/{n}`, `POST /v1/cards/{n}/comments` |
+| Projetos | `POST`, `PATCH`, `DELETE /v1/projects` — maintainer |
+| Etiquetas | `POST`, `PATCH`, `DELETE /v1/labels` — member |
+| Features | `POST`, `PATCH`, `DELETE /v1/features` — member |
+| Páginas | `POST /v1/docs`, `PATCH`/`DELETE /v1/docs/{slug}` — member |
+| Caixa de entrada | `POST /v1/inbox/{id}/adopt`, `DELETE /v1/inbox/{id}` — member |
+
+## O que uma credencial não pode fazer
+
+Duas escritas existem no produto e deliberadamente não estão nesta API.
+
+<ResponseField name="Aprovar a proposta de um agente">
+  Uma proposta espera justamente porque uma pessoa deveria olhar para ela, e é o provedor que garante isso. Uma credencial que pudesse aprovar uma seria um jeito de contornar a revisão escrevendo um script.
+</ResponseField>
+
+<ResponseField name="Convidar pessoas e mudar os papéis delas">
+  Dar acesso a um quadro é o ato sobre o qual todas as outras permissões se apoiam. Uma credencial que pode conceder acesso é uma cuja revogação já não limita o que ela fez.
+</ResponseField>
+
+As duas ficam com uma pessoa e uma sessão.

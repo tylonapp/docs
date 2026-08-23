@@ -1,0 +1,62 @@
+---
+title: "Read a board from a script in five minutes"
+description: "Make an API credential, call the Tylon API with it, and read a board. Covers the one moment the secret is readable and how to choose a board."
+sidebarTitle: "Quickstart"
+---
+
+By the end of this you will have a credential and a board on your screen, read by `curl` rather than by a browser.
+
+<Steps>
+  <Step title="Make a credential">
+    Open **Settings → API credentials**. You need to run the organization — the same role that reads the audit record.
+
+    Give it a name you will recognise in six months (`the deploy script`, not `test`), tick the boards it should reach, and pick a role on each. The roles offered stop at what you hold on that board: you cannot give away more than you have.
+
+    <Warning>
+      The secret appears once, on the screen that makes it, and there is no endpoint that answers with it again. Have somewhere to put it before you press the button.
+    </Warning>
+  </Step>
+  <Step title="Check it works, and learn your board ids">
+    ```bash
+    curl https://api.tylon.app/v1/me \
+      -H "Authorization: Bearer $TYLON_SECRET"
+    ```
+
+    ```json
+    {
+      "clientId": "tyl_id_1yIrdcxW_gkz8XBY",
+      "name": "the deploy script",
+      "scopes": ["read"],
+      "boards": [
+        {
+          "workspaceId": "84415731592203229",
+          "organizationId": "84415731491539931",
+          "role": "viewer"
+        }
+      ],
+      "answering": null
+    }
+    ```
+
+    This is also the listing: `boards` is exactly the set of ids the next call will accept. It is the one endpoint that never asks you to choose.
+  </Step>
+  <Step title="Read a board">
+    ```bash
+    curl https://api.tylon.app/v1/board \
+      -H "Authorization: Bearer $TYLON_SECRET" \
+      -H "X-Tylon-Workspace: 84415731592203229"
+    ```
+
+    If the credential reaches exactly one board, the header is optional. If it reaches several and you leave it out, the API says so and lists the ids rather than guessing.
+  </Step>
+</Steps>
+
+## Next
+
+<Card title="Credentials and rotation" icon="key" href="/en/api-reference/authentication">
+  Two secrets alive at once, and why that is the point.
+</Card>
+
+<Card title="Every endpoint" icon="list" href="/en/api-reference/endpoints/board">
+  The board, the cards, the releases, the inbox.
+</Card>

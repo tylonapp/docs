@@ -1,0 +1,67 @@
+---
+title: "Projetos"
+sidebarTitle: "Projetos"
+description: "Um projeto é um produto que o time entrega — os repositórios dele, os cards, os releases e o fluxo próprio."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/projects.webp" alt="Os projetos de um workspace do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/projects.webp" alt="Os projetos de um workspace do Tylon" />
+</Frame>
+
+Um workspace guarda projetos. Um projeto é *um produto que este time entrega*,
+e é dono das quatro coisas que fazem um quadro significar alguma coisa: os
+repositórios, os cards, os releases e o fluxo próprio.
+
+A contagem ao lado de cada um é do que ele é feito — repositórios, depois
+cards.
+
+<Info>
+  Dois projetos num mesmo workspace andam de formas diferentes de propósito. Um
+  app mobile que sai por revisão de loja e uma API que faz deploy no merge não
+  querem os mesmos estágios, e nenhum dos dois foi feito para fingir que sim.
+</Info>
+
+## Por dentro de um projeto
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/project.webp" alt="Um projeto do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/project.webp" alt="Um projeto do Tylon" />
+</Frame>
+
+**Visão geral**, **Fluxo** e **Repositórios** — e no alto, os quatro lugares
+onde o trabalho do projeto de fato está: o quadro, o trunk, o backlog, os
+releases.
+
+### Como ele anda
+
+Os estágios, em ordem, como uma frase: `Backlog → In development → In review →
+Staging → In production`. **Editar o fluxo** abre [a tela de
+fluxo](/pt-br/screens/flow), onde cada um desses estágios ganha a sua regra de
+branch.
+
+### Do que ele é feito
+
+As branches de que o Tylon é dono aqui — **não tudo que está no provedor**.
+Essa distinção é o ponto do painel: `20 branches em andamento` é o trabalho
+pelo qual este quadro responde, e o que já entrou saiu desta lista para [o
+trunk](/pt-br/screens/trunk).
+
+Cada repositório diz a branch padrão dele e quando o Tylon concordou com o
+provedor pela última vez. Abaixo, uma linha por branch:
+
+```
+feature/144-apple-pay-on-the-checkout-sheet → main   #144  In development  #871 fechado  Checagens passando
+feature/139-split-the-payment-intent-per-seller → main  #139  In review  Bloqueado  #856 fechado  Checagens passando
+```
+
+A branch, para onde ela aponta, o card a que pertence, o estágio em que esse
+card está, o pull request e o que o CI disse. `Bloqueado` e `Aguardando` ficam
+na mesma linha, então o motivo de uma branch não andar está na linha em vez de
+a um clique de distância.
+
+<Note>
+  Uma branch que foi enviada com um nome que a convenção não reconhece não se
+  perde — ela chega [na caixa de entrada](/pt-br/screens/inbox) para ser
+  adotada por um card.
+</Note>

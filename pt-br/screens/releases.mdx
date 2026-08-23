@@ -1,0 +1,47 @@
+---
+title: "Releases"
+sidebarTitle: "Releases"
+description: "Um grupo de cards do Tylon entregues juntos. Congelar faz parar de mudar o que sai; concluir escreve uma tag e um changelog por repositório."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/releases.webp" alt="Releases do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/releases.webp" alt="Releases do Tylon" />
+</Frame>
+
+Opcional, por fluxo. Um time que entrega continuamente desliga os releases e
+nunca encontra esta tela.
+
+## O que é um release
+
+Um grupo de cards **de um projeto**, entregues juntos, com identidade própria.
+`open` enquanto está sendo preenchido; `completed` depois de ter saído — e as
+tags que ele escreveu ficam ao lado, uma por repositório: `v1.8.0`, `v2.3.0`,
+`v0.9.4`.
+
+Três números diferentes para uma entrega, porque cada repositório mantém o
+próprio versionamento. Não existe uma versão única para algo que atravessa
+três deles, e inventar uma seria um número sobre o qual ninguém conseguiria
+agir.
+
+## Congelar
+
+O momento em que o que isto entrega **para de mudar**.
+
+Congelar corta a branch, então a partir daquele segundo existe uma resposta
+para "o que tem neste release" que não muda enquanto alguém está testando.
+Depois disso, um card só entra por um **pick** — um card, deliberadamente — em
+vez do que por acaso tiver entrado desde então.
+
+<Note>
+  Um release congelado ainda é `open`. Congelar não é um terceiro estado: é um
+  release que passou a ter uma branch própria, e ele se conclui do mesmo jeito.
+</Note>
+
+## Concluir
+
+Cria as tags e o fecha. Cada repositório ganha a sua tag e o seu release no
+provedor, com um changelog montado a partir dos cards que estavam nele.
+
+Essa é a última coisa que acontece a um release, e a primeira sobre a qual o
+[trunk](/pt-br/api-reference/endpoints/trunk) consegue ser honesto.

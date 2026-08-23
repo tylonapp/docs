@@ -1,0 +1,39 @@
+---
+title: "Features"
+sidebarTitle: "Features"
+description: "Leia e escreva as features do Tylon — o agrupamento que acompanha uma coisa sendo construída ao longo de vários cards."
+---
+
+Uma feature agrupa os cards que entregam uma coisa ao longo do tempo.
+
+## Como ler e escrever
+
+Member. Uma feature agrupa cards que entregam uma coisa ao longo do tempo.
+
+<ParamField path="POST /v1/features" type="endpoint" />
+
+<ParamField body="name" type="string" required>
+  Até 60 caracteres.
+</ParamField>
+<ParamField body="description" type="string" />
+<ParamField body="color" type="string" />
+
+```json
+{
+  "id": "84842202542510070",
+  "name": "Key rotation",
+  "description": "",
+  "color": "blue",
+  "taskCount": 0,
+  "doneCount": 0,
+  "archived": false,
+  "position": 0
+}
+```
+
+`doneCount` contra `taskCount` é a leitura que vale colocar num painel:
+ela conta cards que de fato chegaram ao fim do fluxo, não cards que alguém
+marcou.
+
+<ParamField path="PATCH /v1/features/{featureId}" type="endpoint" />
+<ParamField path="DELETE /v1/features/{featureId}" type="endpoint" />

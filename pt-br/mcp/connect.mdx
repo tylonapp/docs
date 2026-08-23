@@ -1,0 +1,61 @@
+---
+title: "Conectar um editor"
+sidebarTitle: "Conectar"
+description: "Dê uma URL ao seu editor e ele encontra o resto. O servidor MCP do Tylon autentica você com OAuth 2.0 e PKCE, e você escolhe quais quadros a conexão alcança."
+---
+
+```text
+https://api.tylon.app/mcp
+```
+
+É essa a configuração inteira. Um endereço, o mesmo para todo mundo.
+
+## O que acontece depois de colar
+
+Nada que você tenha que fazer. O editor chama o endpoint, recebe um `401` nomeando um documento de metadados, lê esse documento, encontra o servidor de autorização, se registra e começa o fluxo. Cada passo é um documento.
+
+<Steps>
+  <Step title="Seu navegador abre">
+    O Tylon pergunta quem é você, do jeito de sempre. Este login é seu — o editor nunca o vê.
+  </Step>
+  <Step title="Você escolhe os quadros">
+    A tela de consentimento lista os quadros em que você trabalha e o que você tem em cada um. Marque um ou vários: quem trabalha em três produtos não deveria ter que autorizar três vezes para tocar o dia a partir de um terminal só.
+  </Step>
+  <Step title="Você escolhe ler ou escrever">
+    `workspace:read` lê. `workspace:write` também comenta e anota as convenções de um repositório — nada que mova o Git.
+  </Step>
+</Steps>
+
+## O que a conexão pode fazer
+
+**Exatamente o que você pode, e nada além.** O papel é lido da sua participação a cada chamada, por quadro. Um colega rebaixado a viewer hoje de manhã é viewer para o editor dele hoje à tarde, e alguém removido de um quadro deixa de alcançá-lo sem que ninguém precise lembrar que um dia conectou alguma coisa.
+
+Esta é a diferença deliberada em relação a uma [credencial da API](/pt-br/api-reference/authentication), que tem um papel próprio porque não é ninguém.
+
+## Trabalhar em vários quadros
+
+Quando uma conexão alcança mais de um, as ferramentas que são sobre um quadro recebem um argumento `workspace` — `acme/product`, ou só `product` quando nada mais que você alcança atende por esse nome. Omita com vários e a ferramenta pergunta em vez de adivinhar.
+
+## Os detalhes, para um cliente que os queira
+
+<ResponseField name="Metadados do servidor de autorização" type="RFC 8414">
+  `https://api.tylon.app/.well-known/oauth-authorization-server`
+</ResponseField>
+
+<ResponseField name="Metadados do recurso protegido" type="RFC 9728">
+  `https://api.tylon.app/.well-known/oauth-protected-resource/mcp`
+</ResponseField>
+
+|  |  |
+| --- | --- |
+| Tipos de grant | `authorization_code`, `refresh_token` |
+| PKCE | `S256`, obrigatório |
+| Autenticação do cliente | `none` — não espere um segredo |
+| Registro | dinâmico, RFC 7591 |
+| Escopos | `workspace:read`, `workspace:write` |
+
+As duas recusas são capacidades escritas como recusas: um cliente que lê os metadados aprende que precisa trazer PKCE e que não deve esperar um client secret.
+
+## Desconectar
+
+Revogue a conexão onde você gerencia as suas conexões. Os tokens param de funcionar imediatamente — existe um endpoint de revogação, e o editor vai pedir autorização de novo na próxima vez que você o usar.

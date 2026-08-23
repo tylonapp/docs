@@ -1,0 +1,251 @@
+---
+title: "Cards"
+sidebarTitle: "Cards"
+description: "Leia e escreva um card do Tylon — o estágio dele, repositórios, branches e pull requests, a história de tudo que aconteceu com ele, e as escritas que o movem."
+---
+
+O card é a unidade de trabalho, e a única coisa nesta API que é dona de uma
+branch. O número dele é contado **por quadro**.
+
+## Um card
+
+<ParamField path="GET /v1/cards/{number}" type="endpoint">
+</ParamField>
+
+<ParamField path="number" type="integer" required>
+  O número do card, como o quadro o mostra. Contado por quadro — `#7` existe em todo quadro, e você recebe o do quadro que você nomeou.
+</ParamField>
+
+```json
+{
+  "number": 7,
+  "title": "Invert the log order",
+  "description": "The log shows oldest first…",
+  "statusId": "83729280743377172",
+  "priority": "medium",
+  "assignee": null,
+  "blocked": null,
+  "repositories": [
+    {
+      "fullName": "tylonapp/tylon",
+      "branchName": "feature/7-invert-the-log-order",
+      "prNumber": 12,
+      "prState": "draft",
+      "checksState": "passing"
+    }
+  ]
+}
+```
+
+O array `repositories` é a parte que mais ninguém tem: a branch de que este card é dono em cada repositório, o pull request que ele abriu, e o que o provedor diz sobre os checks. É essa a junção entre um quadro e um repositório, e é por isso que dá para perguntar a um card se ele consegue se mover antes de alguém arrastá-lo.
+
+<ResponseField name="blocked" type="object | null">
+  Presente quando a última promoção foi recusada, com o motivo nas palavras do próprio provedor — conflitos, checks vermelhos, nada para fazer merge. `null` quando o card está livre para se mover.
+</ResponseField>
+
+<ResponseField name="checksState" type="string | null">
+  O que o CI disse, por repositório: `passing`, `failing`, `pending`, ou `null` quando nada reportou. Isso rodou no provedor, não aqui.
+</ResponseField>
+
+## A história
+
+<ParamField path="GET /v1/cards/{number}/timeline" type="endpoint">
+</ParamField>
+
+Tudo que aconteceu com o card, com a discussão entremeada — comentários, movimentos, branches cortadas, pushes, pull requests, o que os agentes fizeram.
+
+**Mais antigo primeiro.** O app mostra do mais novo para o mais velho porque o motivo de alguém abrir um card é o que acabou de acontecer; a API manda na ordem em que foi registrado, que é a ordem que qualquer um construindo o próprio log quer.
+
+```json
+[
+  {
+    "type": "event",
+    "id": "84841558796537836",
+    "kind": "branch_created",
+    "actor": {
+      "user": { "id": "8484…", "name": "Marina Duarte", "kind": "human" },
+      "login": null
+    },
+    "repositoryFullName": "tylonapp/tylon",
+    "data": { "branchName": "feature/7-invert-the-log-order" },
+    "at": "2026-08-22T19:40:11.004Z"
+  },
+  {
+    "type": "comment",
+    "id": "84842044752793584",
+    "body": "Shipping this with the release on Friday.",
+    "author": {
+      "user": { "id": "8484…", "name": "the deploy script", "kind": "machine" },
+      "login": null
+    },
+    "editable": false,
+    "at": "2026-08-22T19:52:03.221Z"
+  }
+]
+```
+
+Todo item tem um `type` de `event` ou `comment` e um `at`. Leia `kind` para
+decidir o que foi um evento — ele é minúsculo com underscores (`created`,
+`status_changed`, `branch_created`, `pushed`) — e trate um que você não
+conhece como algo a pular, não como algo em que falhar: novos são adicionados.
+
+`actor.user.kind` diz o que fez aquilo. Um `machine` é uma credencial da API,
+um `agent` é um agente, e `login` carrega um nome de usuário do provedor para
+os eventos que o provedor nos contou, e não para os que aconteceram aqui.
+
+## Criar um card
+
+<ParamField path="POST /v1/cards" type="endpoint" />
+
+<ParamField body="title" type="string" required>
+  De 1 a 500 caracteres.
+</ParamField>
+
+<ParamField body="description" type="string">
+  Markdown, até 20.000 caracteres.
+</ParamField>
+
+<ParamField body="projectId" type="string">
+  Qual produto. Obrigatório quando o quadro tem vários.
+</ParamField>
+
+<ParamField body="statusId" type="string">
+  Onde ele começa. Omitido, ele cai no backlog como rascunho, que é o que
+  normalmente se quer — iniciá-lo é o ato que corta uma branch.
+</ParamField>
+
+<ParamField body="hotfix" type="boolean">
+  Cortado da ponta final do fluxo em vez da inicial. Perguntado na criação
+  porque é aí que alguém sabe, e porque a resposta precisa estar dada antes de
+  um repositório ser ligado.
+</ParamField>
+
+```bash
+curl -X POST https://api.tylon.app/v1/cards \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 83729280714017040" \
+  -H "Idempotency-Key: alert-a41f9c2b-7742" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Rotate the signing key", "description": "Quarterly."}'
+```
+
+```json
+{
+  "id": "84841558679097323",
+  "projectId": "83729280726599954",
+  "number": 467,
+  "title": "Rotate the signing key",
+  "description": "Quarterly.",
+  "statusId": "83729280743377172",
+  "position": 0,
+  "createdBy": {
+    "id": "84841512789217254",
+    "name": "the deploy script",
+    "avatarUrl": null,
+    "kind": "machine"
+  },
+  "assignee": null,
+  "priority": "none",
+  "labels": [],
+  "repositories": []
+}
+```
+
+`createdBy.kind` é `machine`, e é esse o sentido de uma credencial de escrita
+ser membro: o quadro consegue dizer que um script fez isso, em vez de dar a
+entender que foi um colega.
+
+## Alterar um
+
+<ParamField path="PATCH /v1/cards/{number}" type="endpoint" />
+
+Só o que você nomeia muda. Campos omitidos ficam como estão; `null` em
+`assignee`, `dueDate`, `parentNumber` ou `featureId` limpa cada um, o que é
+diferente de não tocar neles.
+
+<ParamField body="title" type="string" />
+<ParamField body="description" type="string" />
+<ParamField body="priority" type="string">
+  `none`, `low`, `medium`, `high` ou `urgent`.
+</ParamField>
+<ParamField body="assigneeId" type="string | null">
+  Precisa ser membro deste quadro.
+</ParamField>
+<ParamField body="labelIds" type="string[]">
+  O conjunto inteiro, não um delta.
+</ParamField>
+<ParamField body="dueDate" type="string | null" />
+
+```bash
+curl -X PATCH https://api.tylon.app/v1/cards/467 \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 83729280714017040" \
+  -H "Idempotency-Key: sync-2026-08-23-0900" \
+  -H "Content-Type: application/json" \
+  -d '{"priority": "high"}'
+```
+
+Responde com o card inteiro.
+
+## Mover um
+
+<ParamField path="POST /v1/cards/{number}/move" type="endpoint" />
+
+A escrita que executa Git. Ela corta uma branch, abre um pull request ou faz
+merge de um, dependendo de onde o card cai — veja [Escrever](/pt-br/api-reference/writing)
+para as recusas e o que `409` quer dizer aqui.
+
+<ParamField body="statusId" type="string" required>
+  O estágio para onde mover. Vem de `/v1/board`, onde cada coluna carrega o
+  próprio id e o `minRole` necessário para entrar nela.
+</ParamField>
+
+<ParamField body="index" type="integer" required>
+  Posição na coluna de destino. `0` é o topo.
+</ParamField>
+
+```json
+{
+  "task": { "number": 467, "statusId": "83729280743377172", "blocked": null },
+  "promoted": []
+}
+```
+
+`promoted` é vazio quando nada fez merge — um card sem repositório ligado, ou
+um estágio cuja regra de fluxo não toca nenhum. Não é uma falha; é a resposta
+honesta de que o quadro se moveu e o Git não tinha o que fazer.
+
+## Comentar
+
+<ParamField path="POST /v1/cards/{number}/comments" type="endpoint" />
+
+<ParamField body="body" type="string" required>
+  De 1 a 10.000 caracteres, markdown.
+</ParamField>
+
+```json
+{
+  "id": "84842044752793584",
+  "body": "Key rotated; the old one is revoked.",
+  "author": {
+    "user": { "name": "the deploy script", "kind": "machine" },
+    "login": null
+  },
+  "mirroredTo": 0,
+  "editable": true,
+  "at": "2026-08-23T02:51:59.757Z",
+  "editedAt": null
+}
+```
+
+<Note>
+  Um comentário num card cujo pull request está aberto é espelhado no provedor,
+  e `mirroredTo` diz a quantos ele chegou. A discussão é uma conversa só, esteja
+  a pessoa onde estiver.
+</Note>
+
+## Apagar um
+
+<ParamField path="DELETE /v1/cards/{number}" type="endpoint" />
+
+`204`, e nada no corpo.

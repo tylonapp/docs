@@ -1,0 +1,51 @@
+---
+title: "O quadro"
+sidebarTitle: "Quadro"
+description: "Cada estágio de um fluxo do Tylon com os cards parados nele — e sob cada coluna, a regra de branch que ela executa."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/pt-light/board.webp" alt="O quadro do Tylon" />
+  <img className="hidden dark:block" src="/images/pt-dark/board.webp" alt="O quadro do Tylon" />
+</Frame>
+
+Trabalho em andamento. O backlog é uma lista à parte e não está aqui.
+
+## A linha sob cada coluna
+
+Olhe a linha cinza sob os nomes das colunas: **corta de main**, *não toca o
+Git*, **faz merge em staging**, **faz merge em main**. Essa é a regra de
+branch do fluxo para aquele estágio, escrita bem onde você está prestes a
+soltar um card.
+
+É a diferença inteira entre isto e um quadro com uma integração de Git.
+Arrastar um card para **In production** não é uma mudança de etiqueta à qual
+outra coisa reage — é o merge em `main`, e a coluna diz isso antes de você
+fazer.
+
+`Mantenedor` ao lado de uma coluna é o papel mínimo para mover um card **para
+dentro** dela. Promover para produção não é a mesma permissão que começar o
+trabalho.
+
+## O que um card mostra sem ser aberto
+
+Cada card carrega todo repositório em que mexe, e para cada um a branch, o
+pull request e o que o CI disse:
+
+```
+checkout-web   feature/144-apple-p… → main    #871 fechado   Checagens passando
+checkout-api   feature/144-apple-p… → main    sem pull request ainda
+2 repositórios · uma promoção
+```
+
+"2 repositórios · uma promoção" é a promessa de andar junto, na cara do card:
+uma funcionalidade que mexe no app web e na API é **uma entrega**, e movê-la
+move os dois ou nenhum.
+
+## Filtros e visões
+
+**Filtrar** reduz o que está na tela; **Exibição** muda o que cada card
+mostra. Um arranjo que vale guardar vira uma visão salva — *Mine, this week*,
+*Waiting on somebody*, *Wallets* na barra lateral são essas.
+
+As visões são pessoais. As suas são suas.

@@ -1,0 +1,49 @@
+---
+title: "Cards, quadros e projetos"
+sidebarTitle: "Cards e quadros"
+description: "O que é um card no Tylon, a diferença entre um rascunho no backlog e um card em andamento, e por que um card sozinho pode ter branches em vários repositórios ao mesmo tempo."
+---
+
+## O card
+
+O card é a unidade de trabalho, e o lugar onde quem cuida do produto e quem escreve o código falam sobre ela. Ele tem um número, e esse número é contado **por quadro** — `#7` existe em todo quadro, e são cards diferentes.
+
+O que faz dele um card do Tylon, e não uma linha numa lista, é o que ele carrega: a branch cortada para ele, o pull request aberto a partir dessa branch, e o que o CI disse sobre os dois. Dá para perguntar a um card se ele consegue se mover antes de alguém arrastá-lo.
+
+## Rascunho, depois em andamento
+
+<Steps>
+  <Step title="No backlog, ele é um rascunho">
+    Um título, uma descrição, uma discussão. **Nada aqui toca no Git.** O backlog cresce sem limite e é trabalhado como lista — reordene, busque, escolha de dentro dele.
+  </Step>
+  <Step title="Iniciar é um ato deliberado">
+    Tirar um card do backlog é o que corta a branch. É por isso que é um movimento e não uma caixinha de marcar: ele pergunta em quais repositórios o card mexe, porque é essa resposta que decide o que vai ser criado.
+  </Step>
+  <Step title="Agora ele está no quadro">
+    O quadro mostra o trabalho **em andamento** — os estágios do fluxo, sem o backlog atrás deles.
+  </Step>
+</Steps>
+
+## Um card, vários repositórios
+
+Uma funcionalidade que mexe no app web e na API é **uma entrega só, ou não é entrega nenhuma**. Então um card se liga a vários repositórios, e ganha uma branch e um pull request em rascunho em cada um.
+
+Eles andam juntos. Mover o card promove todos os repositórios em que ele mexe, e se um recusa — conflitos, checks vermelhos — o card não se move pela metade: ele fica bloqueado, e o bloqueio diz qual repositório recusou e o que já entrou nos outros.
+
+<Note>
+  Isto é o que nem um quadro nem um provedor de repositório conseguem fazer sozinhos. O GitHub conhece cada branch; o quadro conhece a intenção; só quem rodou o merge sabe que os dois eram um ato só.
+</Note>
+
+## Onde um card mora
+
+|  |  |
+| --- | --- |
+| **Workspace** | A unidade de isolamento do time. Guarda as pessoas, as conexões de Git e os projetos. |
+| **Projeto** | Um produto que o time entrega — `Checkout`, `App mobile`. Ele é dono do próprio fluxo, dos repositórios de que é feito e dos seus releases. |
+| **Card** | Pertence a exatamente um projeto, e só pode tocar os repositórios daquele projeto. |
+
+Todo card precisa ter um projeto, e é por isso que a API pede um `projectId` num quadro que tem mais de um: as colunas pertencem a um projeto, então "o quadro do time inteiro" não é uma coisa que dê para desenhar.
+
+## Gente que não escreve código
+
+Aqui um viewer é leitor de primeira classe. O ponto do produto é que alguém que nunca abre um terminal consegue ver a branch, o diff, o check que falhou e o motivo de um card ter recusado se mover — sem que mandem essa pessoa abrir o GitHub.
