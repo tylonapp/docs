@@ -18,7 +18,7 @@ description: "Read one Tylon card in full — its stage, repositories, branches 
   "number": 7,
   "title": "Invert the log order",
   "description": "The log shows oldest first…",
-  "status": { "name": "In Review", "position": 2 },
+  "statusId": "83729280743377172",
   "priority": "medium",
   "assignee": null,
   "blocked": null,
@@ -57,18 +57,192 @@ Everything that happened to the card, with the discussion woven in — comments,
 [
   {
     "type": "event",
-    "kind": "BRANCH_CREATED",
-    "actor": { "user": { "name": "Marina Duarte" } },
+    "id": "84841558796537836",
+    "kind": "branch_created",
+    "actor": {
+      "user": { "id": "8484…", "name": "Marina Duarte", "kind": "human" },
+      "login": null
+    },
+    "repositoryFullName": "tylonapp/tylon",
     "data": { "branchName": "feature/7-invert-the-log-order" },
     "at": "2026-08-22T19:40:11.004Z"
   },
   {
     "type": "comment",
+    "id": "84842044752793584",
     "body": "Shipping this with the release on Friday.",
-    "author": { "user": { "name": "Marina Duarte" } },
+    "author": {
+      "user": { "id": "8484…", "name": "the deploy script", "kind": "machine" },
+      "login": null
+    },
+    "editable": false,
     "at": "2026-08-22T19:52:03.221Z"
   }
 ]
 ```
 
-Every item has a `type` of `event` or `comment` and an `at`. Read `kind` to decide what an event was; treat an unfamiliar `kind` as something to skip rather than something to fail on — new ones get added.
+Every item has a `type` of `event` or `comment` and an `at`. Read `kind` to
+decide what an event was — it is lowercase with underscores (`created`,
+`status_changed`, `branch_created`, `pushed`) — and treat an unfamiliar one as
+something to skip rather than something to fail on: new ones get added.
+
+`actor.user.kind` tells you what did it. A `machine` is an API credential, an
+`agent` is an agent, and `login` carries a provider username for the events
+the forge told us about rather than ones that happened here.
+
+## Create a card
+
+<ParamField path="POST /v1/cards" type="endpoint" />
+
+<ParamField body="title" type="string" required>
+  1 to 500 characters.
+</ParamField>
+
+<ParamField body="description" type="string">
+  Markdown, up to 20,000 characters.
+</ParamField>
+
+<ParamField body="projectId" type="string">
+  Which product. Required when the board holds several.
+</ParamField>
+
+<ParamField body="statusId" type="string">
+  Where it starts. Left out, it lands in the backlog as a draft, which is the
+  usual thing to want — starting it is the act that cuts a branch.
+</ParamField>
+
+<ParamField body="hotfix" type="boolean">
+  Cut from the far end of the flow rather than the near one. Asked at creation
+  because that is when somebody knows, and because the answer has to be in
+  before a repository is linked.
+</ParamField>
+
+```bash
+curl -X POST https://api.tylon.app/v1/cards \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 83729280714017040" \
+  -H "Idempotency-Key: alert-a41f9c2b-7742" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Rotate the signing key", "description": "Quarterly."}'
+```
+
+```json
+{
+  "id": "84841558679097323",
+  "projectId": "83729280726599954",
+  "number": 467,
+  "title": "Rotate the signing key",
+  "description": "Quarterly.",
+  "statusId": "83729280743377172",
+  "position": 0,
+  "createdBy": {
+    "id": "84841512789217254",
+    "name": "the deploy script",
+    "avatarUrl": null,
+    "kind": "machine"
+  },
+  "assignee": null,
+  "priority": "none",
+  "labels": [],
+  "repositories": []
+}
+```
+
+`createdBy.kind` is `machine`, and that is the point of a write credential
+being a member: the board can say a script did this rather than implying a
+colleague did.
+
+## Change one
+
+<ParamField path="PATCH /v1/cards/{number}" type="endpoint" />
+
+Only what you name changes. Fields left out are left alone; `null` on
+`assignee`, `dueDate`, `parentNumber` or `featureId` clears them, which is
+different from not touching them.
+
+<ParamField body="title" type="string" />
+<ParamField body="description" type="string" />
+<ParamField body="priority" type="string">
+  `none`, `low`, `medium`, `high` or `urgent`.
+</ParamField>
+<ParamField body="assigneeId" type="string | null">
+  Must be a member of this board.
+</ParamField>
+<ParamField body="labelIds" type="string[]">
+  The whole set, not a delta.
+</ParamField>
+<ParamField body="dueDate" type="string | null" />
+
+```bash
+curl -X PATCH https://api.tylon.app/v1/cards/467 \
+  -H "Authorization: Bearer $TYLON_SECRET" \
+  -H "X-Tylon-Workspace: 83729280714017040" \
+  -H "Idempotency-Key: sync-2026-08-23-0900" \
+  -H "Content-Type: application/json" \
+  -d '{"priority": "high"}'
+```
+
+Answers with the whole card.
+
+## Move one
+
+<ParamField path="POST /v1/cards/{number}/move" type="endpoint" />
+
+The write that runs Git. It cuts a branch, opens a pull request or merges one,
+depending on where the card lands — see [Writing](/api-reference/writing) for
+the refusals and what `409` means here.
+
+<ParamField body="statusId" type="string" required>
+  The stage to move into. From `/v1/board`, where each column carries its id
+  and the `minRole` it takes to enter it.
+</ParamField>
+
+<ParamField body="index" type="integer" required>
+  Position in the target column. `0` is the top.
+</ParamField>
+
+```json
+{
+  "task": { "number": 467, "statusId": "83729280743377172", "blocked": null },
+  "promoted": []
+}
+```
+
+`promoted` is empty when nothing merged — a card with no linked repository, or
+a stage whose flow rule touches none. It is not a failure; it is the honest
+answer that the board moved and Git had nothing to do.
+
+## Comment
+
+<ParamField path="POST /v1/cards/{number}/comments" type="endpoint" />
+
+<ParamField body="body" type="string" required>
+  1 to 10,000 characters, markdown.
+</ParamField>
+
+```json
+{
+  "id": "84842044752793584",
+  "body": "Key rotated; the old one is revoked.",
+  "author": {
+    "user": { "name": "the deploy script", "kind": "machine" },
+    "login": null
+  },
+  "mirroredTo": 0,
+  "editable": true,
+  "at": "2026-08-23T02:51:59.757Z",
+  "editedAt": null
+}
+```
+
+<Note>
+  A comment on a card whose pull request is open is mirrored to the provider,
+  and `mirroredTo` says how many it reached. The discussion is one
+  conversation, wherever somebody is standing.
+</Note>
+
+## Delete one
+
+<ParamField path="DELETE /v1/cards/{number}" type="endpoint" />
+
+`204`, and nothing in the body.

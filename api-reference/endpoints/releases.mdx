@@ -20,12 +20,21 @@ The releases of a product, open and completed.
   {
     "id": "84391…",
     "name": "2026.08",
-    "status": "OPEN",
+    "status": "open",
     "frozenAt": null,
-    "taskCount": 6
+    "taskCount": 6,
+    "createdByName": "Marina Duarte",
+    "completedAt": null,
+    "tags": []
   }
 ]
 ```
+
+<ResponseField name="status" type="string">
+  `open` or `completed`, lowercase. A frozen release is still `open` — freezing
+  is not a third status, it is a release that has taken a branch of its own and
+  completes the same way.
+</ResponseField>
 
 <ResponseField name="frozenAt" type="string | null">
   When what this release ships stopped changing. A frozen release has had its branch cut, and a card joins it after that only through a deliberate pick — which is the whole point of the moment.
@@ -59,3 +68,103 @@ Three kinds turn up here:
 </ResponseField>
 
 An inbox that is not empty is the honest thing to alert on. It is, by construction, the list of things a machine could not decide.
+
+## Creating and shaping a release
+
+<ParamField path="POST /v1/releases" type="endpoint" />
+
+<ParamField body="name" type="string" required>
+  1 to 80 characters — `2026.09`, `Checkout rewrite`.
+</ParamField>
+
+<ParamField query="projectId" type="string">
+  Which product. A release delivers one, so this is required when the board
+  holds several.
+</ParamField>
+
+<ParamField path="PUT /v1/releases/{id}/cards" type="endpoint" />
+
+<ParamField body="taskNumbers" type="integer[]" required>
+  The whole scope, not additions — up to 500. `PUT` because a caller computing
+  the scope somewhere else wants to say what it is now, rather than diff it
+  against whatever is there.
+</ParamField>
+
+Answers `204`.
+
+<Note>
+  A flow has to have releases turned on. Otherwise this is `400`: *"This flow
+  does not work with releases. Turn it on in the flow settings first."* A team
+  shipping continuously never meets any of this.
+</Note>
+
+## Freezing
+
+<ParamField path="POST /v1/releases/{id}/freeze" type="endpoint" />
+
+Maintainer. Cuts the branch, and from that second what this ships stops
+changing — which is what makes "what is in this release" a question with an
+answer.
+
+<ParamField path="DELETE /v1/releases/{id}/freeze" type="endpoint" />
+
+Both answer with the release.
+
+## Picking into a frozen one
+
+<ParamField path="POST /v1/releases/{id}/pick" type="endpoint" />
+
+<ParamField body="taskNumber" type="integer" required />
+
+The only door in after a freeze, one card at a time. That is the point rather
+than a limitation: a release you can add to in bulk after freezing is a
+release that was never frozen.
+
+## Promoting
+
+<ParamField path="POST /v1/releases/{id}/promote" type="endpoint" />
+
+<ParamField body="statusId" type="string" required>
+  The stage to move the release's cards into.
+</ParamField>
+
+<ParamField body="taskNumbers" type="integer[]">
+  Only these. Left out, the whole release goes.
+</ParamField>
+
+Answers `200` with an outcome rather than throwing. A release of twelve cards
+where nine promoted and three were refused is news, not an error — the
+refusals are in the body, each naming its card and the repository that said
+no, and the nine that landed stay landed.
+
+## Completing
+
+<ParamField path="POST /v1/releases/{id}/complete" type="endpoint" />
+
+Maintainer. Tags and closes it.
+
+<ParamField body="versions" type="object[]" required>
+  One entry per repository: `{ "repositoryId": "…", "tagName": "v2.4.0" }`.
+  Each repository gets its own tag and its own release on the provider,
+  because each keeps its own versioning — there is no single number for a
+  delivery that spans three of them.
+</ParamField>
+
+<ParamField path="DELETE /v1/releases/{id}" type="endpoint" />
+
+Maintainer. `204`.
+
+## The inbox, cleared
+
+<ParamField path="POST /v1/inbox/{itemId}/adopt" type="endpoint" />
+
+Take a branch somebody cut in a terminal and make it the card's.
+
+<ParamField query="card" type="integer">
+  Which card. Optional — the Inbox already guessed from the naming
+  convention, and this is how you overrule the guess.
+</ParamField>
+
+<ParamField path="DELETE /v1/inbox/{itemId}" type="endpoint" />
+
+Put the item away without acting on it. Both answer `204`.

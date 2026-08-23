@@ -58,7 +58,8 @@
             "pages": [
               "api-reference/endpoints/board",
               "api-reference/endpoints/cards",
-              "api-reference/endpoints/releases"
+              "api-reference/endpoints/releases",
+              "api-reference/endpoints/board-parts"
             ]
           }
         ]
