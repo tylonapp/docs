@@ -9,29 +9,6 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "pages": [
-      {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "quickstart"
-        ]
-      }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    },
     "tabs": [
       {
         "tab": "Documentation",
@@ -72,8 +49,7 @@
               "api-reference/authentication",
               "api-reference/workspaces",
               "api-reference/writing",
-              "api-reference/errors",
-              "api-reference/rate-limits"
+              "api-reference/errors"
             ]
           },
           {
