@@ -1,0 +1,64 @@
+---
+title: "Agents"
+sidebarTitle: "Agents"
+description: "An agent in Tylon is a member of the team: it holds a role, is assigned cards, writes on them, and signs what it does."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/light/agents.webp" alt="Tylon agents" />
+  <img className="hidden dark:block" src="/images/dark/agents.webp" alt="Tylon agents" />
+</Frame>
+
+Not a chat box with the product's name on it. An agent is **a member**: it
+holds a role on the board, is assigned cards, writes in the discussion, and
+what it does is signed by it in the card's story.
+
+## What each one says about itself
+
+```
+Otto   Member · writes code → opens a PR, writes on the card, opens subtasks
+       Wakes when: a card is assigned to it; somebody mentions it in a
+       comment; its own pull request goes red
+```
+
+Three things, and they are the three worth knowing before you let one near a
+repository.
+
+<ResponseField name="Its role">
+  `Member`, `Maintainer` — the same roles a person has, doing the same work.
+  Iris is a maintainer because reviewing is what it is for.
+</ResponseField>
+
+<ResponseField name="What it may do">
+  Not what it is for — the instructions say that — but what it can actually
+  reach. An agent that decides to move a card without the capability is told
+  it cannot, and the refusal lands on the run.
+</ResponseField>
+
+<ResponseField name="When it wakes">
+  The interesting one. *"Its own pull request goes red"* is an agent that
+  answers for its own build — it is not waiting to be asked, it is watching
+  the thing it did.
+</ResponseField>
+
+## Runs
+
+Every waking is a run, and the list below the agents is what they have been
+doing. A red ring is one that did not finish; `4 changed` is how many files a
+run touched.
+
+A run is the receipt: what it cost, what it read, what it wrote, and whether
+it worked. `last failed on #137` on the agent itself is the same fact, kept
+where somebody deciding whether to trust it will see it.
+
+<Warning>
+  An agent's work arrives as a **proposal** — a pull request left in draft. A
+  person approves it, and the provider is what enforces that. Nothing an agent
+  does merges because it decided to.
+</Warning>
+
+## Where they run
+
+In a container with no network. It gets the repository and the model, and
+nothing else — an agent that could reach the internet is an agent whose
+instructions are a suggestion.

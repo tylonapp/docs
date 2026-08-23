@@ -1,0 +1,48 @@
+---
+title: "Pages"
+sidebarTitle: "Pages"
+description: "The pages a Tylon team writes for itself and its agents — conventions, runbooks, what a decision was, linked to each other and to the cards."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/light/docs.webp" alt="Tylon pages" />
+  <img className="hidden dark:block" src="/images/dark/docs.webp" alt="Tylon pages" />
+</Frame>
+
+What a team knows, written where the work is — and, deliberately, where the
+agents read.
+
+## Why it is not a wiki in another tab
+
+An agent about to touch this repository reads these. *How we name branches*,
+*Writing migrations*, *Working with the provider* are not documentation about
+the product; they are the instructions a member is expected to have.
+
+Kept here rather than in a separate tool for the same reason the diff is:
+something a person has to go somewhere else to find is something that gets out
+of date, and an agent cannot go anywhere else at all.
+
+## Links between pages
+
+`[[decline-taxonomy]]` in the body is a link. Pages point at each other, and a
+page knows what points at it — so a convention that three runbooks depend on
+says so on itself.
+
+A link to a page that does not exist yet is not an error. It is a page
+somebody has decided is worth writing, and the ones nobody wrote are listed as
+such.
+
+## Ended pages
+
+Deleting a page **ends** it rather than removing it, and ended pages sit at the
+bottom of the tree with **Restore** beside them.
+
+The same rule as everywhere else here: a decision somebody made and later
+reversed is part of how the team got where it is, and a wiki that forgets it
+is a wiki that will have the same argument again.
+
+<Tip>
+  Pages can be written from the API too, which is the case worth automating: a
+  convention that already lives in a linter or a generator should not be
+  transcribed by hand into the place the agents look.
+</Tip>

@@ -1,0 +1,64 @@
+---
+title: "A card"
+sidebarTitle: "A card"
+description: "What a Tylon card holds: its branches and pull requests across every repository, the reason it is blocked, and the story of everything that happened to it."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/light/blocked.webp" alt="A blocked Tylon card" />
+  <img className="hidden dark:block" src="/images/dark/blocked.webp" alt="A blocked Tylon card" />
+</Frame>
+
+This card is blocked, which is the state worth showing first — a card that
+moves cleanly has nothing to explain.
+
+## The refusal is the provider's own words
+
+> Required status check "contract-tests" is expected. GitHub refused the merge:
+> the branch is 4 commits behind main and the branch protection rule on main
+> requires branches to be up to date before merging.
+
+Tylon did not summarise that or translate it into a status. It asked GitHub to
+merge, GitHub said no, and this is what it said. Underneath: **the card stayed
+where it was.** Nothing half-happened.
+
+## One card, three repositories
+
+```
+checkout-web    feature/139-split-the-payment-intent-per-seller → main   Checks passing
+checkout-api    feature/139-split-the-payment-intent-per-seller → main   Checks failing
+checkout-infra  feature/139-split-the-payment-intent-per-seller → main   Checks passing
+```
+
+**one is red — none of them move.** Two of three green is not two thirds of a
+delivery, and a board that let this one through would be a board saying
+"shipped" about something that is half out.
+
+## When nothing is wrong
+
+<Frame>
+  <img className="block dark:hidden" src="/images/light/task.webp" alt="A Tylon card" />
+  <img className="hidden dark:block" src="/images/dark/task.webp" alt="A Tylon card" />
+</Frame>
+
+The same card with nothing in its way: the repositories, their branches and
+their pull requests, and no banner. Most cards look like this — the blocked one
+is above because it is the state that has something to say.
+
+## Properties
+
+Status, assignee, priority, feature, due date, labels. Under the status,
+again, what that stage does to Git — `does not touch Git` here, because **In
+review** is a stage that waits rather than merges.
+
+## The tabs
+
+| | |
+| --- | --- |
+| **Log** | Everything that happened, with the discussion woven in — moves, branches cut, pushes, comments, what agents did. Newest first. |
+| **Subtasks** | Cards that belong to this one. |
+| **Files** | The pages and files worth reading before touching it. |
+| **Change** | The diff of what this card has done, per repository, read without leaving here. |
+
+A person who does not write code can read all four. That is the point of
+them being here rather than a link to the forge.

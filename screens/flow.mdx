@@ -1,0 +1,62 @@
+---
+title: "The flow"
+sidebarTitle: "Flow"
+description: "Where a Tylon team says what each stage does to Git: the statuses, the branch matrix, and who may move a card into each one."
+---
+
+<Frame>
+  <img className="block dark:hidden" src="/images/light/flow.webp" alt="The Tylon flow settings" />
+  <img className="hidden dark:block" src="/images/dark/flow.webp" alt="The Tylon flow settings" />
+</Frame>
+
+Configured once, per project, and applied the same way every time. This is the
+screen that makes moving a card deterministic enough to automate.
+
+## The statuses
+
+In order, with the role it takes to move a card **into** each. In the flow
+above, four stages are a member's and **In production** is a maintainer's —
+promoting to production is not the same permission as starting work.
+
+The first is the **Backlog**, marked `born here`: every card is born there and
+it never touches Git. One per flow.
+
+## The matrix
+
+The screen says it in one line:
+
+> Statuses across the top. Repositories down the side. Each cell is where a
+> branch is cut from and where it merges — **empty means that stage does not
+> touch that repository**.
+
+So reading the row for `checkout-web` under *In development*: the branch is cut
+from `main`, and nothing merges. Under *In production*, the merge goes to
+`main`.
+
+And `checkout-infra` is empty under *In development* — that repository joins
+later in the flow. A card touching only the web app and the API gets two
+branches, not three.
+
+<Warning>
+  An empty cell is not "not configured yet". It is a statement: this stage does
+  nothing to this repository. That is how a flow says a repository only enters
+  at staging, or only ever receives a merge and is never cut from.
+</Warning>
+
+## Branch names
+
+A template — `feature/{{number}}-{{title}}` by default. It matters more than it
+looks: the board recognises branches by this convention, so a branch named
+anything else never reaches the card it was cut for. Before cutting one by
+hand, ask Tylon what it should be called.
+
+## Presets
+
+**Apply preset** replaces the statuses and the matrix with a shape that
+already works — trunk-based, or a staging train. Faster than drawing five
+columns and safer than guessing which cell should be empty.
+
+<Tip>
+  A new project starts from the flow of one that already exists and owns it
+  from then on. Changing this one changes nothing anywhere else.
+</Tip>
