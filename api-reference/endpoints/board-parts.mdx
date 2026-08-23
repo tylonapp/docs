@@ -1,0 +1,135 @@
+---
+title: "Projects, labels, features and pages"
+sidebarTitle: "The board's parts"
+description: "Create and change the things a Tylon board is made of — projects, labels, features — and the pages agents read, from the API."
+---
+
+What a board is made of, and what agents read before they touch it. Mostly
+configuration, so mostly written once — but worth automating where the truth
+lives somewhere else already.
+
+## Projects
+
+Maintainer. A project is a product the team ships: it owns its flow, the
+repositories it is built from, and its releases.
+
+<ParamField path="POST /v1/projects" type="endpoint" />
+
+<ParamField body="name" type="string" required />
+<ParamField body="slug" type="string">
+  Derived from the name when left out.
+</ParamField>
+<ParamField body="description" type="string" />
+
+<ParamField path="PATCH /v1/projects/{projectId}" type="endpoint" />
+<ParamField path="DELETE /v1/projects/{projectId}" type="endpoint" />
+
+<Warning>
+  A new project starts from the flow of one that already exists and owns it
+  from then on. Creating one from a script means the flow it inherits is
+  whatever was there — check it before cards start moving through it.
+</Warning>
+
+## Labels
+
+Member.
+
+<ParamField path="POST /v1/labels" type="endpoint" />
+
+<ParamField body="name" type="string" required />
+<ParamField body="color" type="string">
+  One of the palette's names, not a hex value.
+</ParamField>
+
+```json
+{
+  "id": "84842099970805746",
+  "name": "needs-migration",
+  "color": "amber",
+  "taskCount": 0
+}
+```
+
+<ParamField path="PATCH /v1/labels/{labelId}" type="endpoint" />
+<ParamField path="DELETE /v1/labels/{labelId}" type="endpoint" />
+
+Deleting takes the label off every card at once. `taskCount` is how many that
+would be.
+
+## Features
+
+Member. A feature groups cards that deliver one thing across time.
+
+<ParamField path="POST /v1/features" type="endpoint" />
+
+<ParamField body="name" type="string" required>
+  Up to 60 characters.
+</ParamField>
+<ParamField body="description" type="string" />
+<ParamField body="color" type="string" />
+
+```json
+{
+  "id": "84842202542510070",
+  "name": "Key rotation",
+  "description": "",
+  "color": "blue",
+  "taskCount": 0,
+  "doneCount": 0,
+  "archived": false,
+  "position": 0
+}
+```
+
+`doneCount` against `taskCount` is the reading worth putting on a dashboard:
+it counts cards that actually reached the end of the flow, not cards somebody
+ticked.
+
+<ParamField path="PATCH /v1/features/{featureId}" type="endpoint" />
+<ParamField path="DELETE /v1/features/{featureId}" type="endpoint" />
+
+## Pages
+
+Member. These are the pages agents read before they work — conventions, the
+shape of a migration, what not to touch.
+
+<ParamField path="POST /v1/docs" type="endpoint" />
+
+<ParamField body="title" type="string" required>
+  The slug is derived from it, and follows it if the title changes.
+</ParamField>
+<ParamField body="body" type="string">
+  Markdown. `[[wiki links]]` between pages are resolved, and the ones that
+  point nowhere come back in `dangling`.
+</ParamField>
+<ParamField body="parentId" type="string">
+  Pages nest.
+</ParamField>
+
+```json
+{
+  "id": "84842202777391096",
+  "title": "Branch naming",
+  "slug": "branch-naming",
+  "parentId": null,
+  "position": 0,
+  "body": "Cut from `main`.",
+  "createdBy": "docs capture",
+  "updatedBy": "docs capture",
+  "backlinks": [],
+  "dangling": [],
+  "tasks": []
+}
+```
+
+<ParamField path="PATCH /v1/docs/{slug}" type="endpoint" />
+<ParamField path="DELETE /v1/docs/{slug}" type="endpoint" />
+
+Addressed by slug rather than id, because that is what a link in another page
+carries.
+
+<Note>
+  This is the one place on the write API where automating is obviously right:
+  a convention that already lives in a generator or a lint config should not
+  be transcribed by hand into the place the agents look, where it will drift.
+</Note>
