@@ -1,0 +1,52 @@
+---
+title: "Projects"
+sidebarTitle: "Projects"
+description: "Read and write Tylon projects — the products a board ships, each owning its flow, repositories and releases."
+---
+
+A product the team ships. It owns its flow, the repositories it is built
+from, the cards that move it and the releases that deliver it — and a card
+belongs to exactly one, which is why so many calls ask for a `projectId`.
+
+## Reading them
+
+<ParamField path="GET /v1/projects" type="endpoint">
+</ParamField>
+
+The products inside a board. A board's columns belong to a project, so this is what you read to find the `projectId` the other calls want.
+
+```json
+[
+  {
+    "id": "83729280726599954",
+    "name": "Checkout",
+    "slug": "checkout",
+    "description": "",
+    "repositoryCount": 3,
+    "taskCount": 12,
+    "createdAt": "2026-08-20T01:10:16.135Z"
+  }
+]
+```
+
+## Writing them
+
+Maintainer. A project is a product the team ships: it owns its flow, the
+repositories it is built from, and its releases.
+
+<ParamField path="POST /v1/projects" type="endpoint" />
+
+<ParamField body="name" type="string" required />
+<ParamField body="slug" type="string">
+  Derived from the name when left out.
+</ParamField>
+<ParamField body="description" type="string" />
+
+<ParamField path="PATCH /v1/projects/{projectId}" type="endpoint" />
+<ParamField path="DELETE /v1/projects/{projectId}" type="endpoint" />
+
+<Warning>
+  A new project starts from the flow of one that already exists and owns it
+  from then on. Creating one from a script means the flow it inherits is
+  whatever was there — check it before cards start moving through it.
+</Warning>

@@ -1,0 +1,33 @@
+---
+title: "Labels"
+sidebarTitle: "Labels"
+description: "Read and write the labels on a Tylon board."
+---
+
+Member. Labels are the board's own, shared across its projects.
+
+## Reading and writing them
+
+Member.
+
+<ParamField path="POST /v1/labels" type="endpoint" />
+
+<ParamField body="name" type="string" required />
+<ParamField body="color" type="string">
+  One of the palette's names, not a hex value.
+</ParamField>
+
+```json
+{
+  "id": "84842099970805746",
+  "name": "needs-migration",
+  "color": "amber",
+  "taskCount": 0
+}
+```
+
+<ParamField path="PATCH /v1/labels/{labelId}" type="endpoint" />
+<ParamField path="DELETE /v1/labels/{labelId}" type="endpoint" />
+
+Deleting takes the label off every card at once. `taskCount` is how many that
+would be.

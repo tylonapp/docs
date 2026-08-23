@@ -56,10 +56,15 @@
             "group": "Endpoints",
             "icon": "list",
             "pages": [
+              "api-reference/endpoints/inbox",
+              "api-reference/endpoints/backlog",
               "api-reference/endpoints/board",
               "api-reference/endpoints/cards",
               "api-reference/endpoints/releases",
-              "api-reference/endpoints/board-parts"
+              "api-reference/endpoints/projects",
+              "api-reference/endpoints/labels",
+              "api-reference/endpoints/features",
+              "api-reference/endpoints/docs"
             ]
           }
         ]

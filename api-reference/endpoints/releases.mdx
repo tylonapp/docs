@@ -1,10 +1,13 @@
 ---
-title: "Releases and inbox"
-sidebarTitle: "Releases and inbox"
-description: "Read what a Tylon release ships and what is waiting for a person in the inbox — branch suggestions, refused promotions, grouped errors."
+title: "Releases"
+sidebarTitle: "Releases"
+description: "Read and write Tylon releases — what ships together, freezing, picking, promoting and completing."
 ---
 
-## Releases
+A group of cards of one project, delivered together. Optional per flow: a
+team that ships continuously turns releases off and never meets any of this.
+
+## Reading them
 
 <ParamField path="GET /v1/releases" type="endpoint">
 </ParamField>
@@ -41,33 +44,6 @@ The releases of a product, open and completed.
 </ResponseField>
 
 This is the reading worth putting on a status page: a frozen release with a date is a promise somebody can act on, and an open one is not yet.
-
-## Inbox
-
-<ParamField path="GET /v1/inbox" type="endpoint">
-</ParamField>
-
-What is waiting for a person to decide.
-
-<ParamField query="projectId" type="string">
-  Which product. Optional when the board has one project.
-</ParamField>
-
-Three kinds turn up here:
-
-<ResponseField name="branch_suggestion" type="kind">
-  A branch created by hand whose name matches the team's convention. Tylon offers the link and only offers it — linking the wrong branch to a card on a guess is worse than not noticing it.
-</ResponseField>
-
-<ResponseField name="promotion_blocked" type="kind">
-  A card whose move was refused, with the forge's own words: conflicts, red checks, nothing to merge.
-</ResponseField>
-
-<ResponseField name="error_reported" type="kind">
-  Something a monitor grouped in production. It waits here rather than landing on the board — a backlog that fills itself is a backlog nobody reads.
-</ResponseField>
-
-An inbox that is not empty is the honest thing to alert on. It is, by construction, the list of things a machine could not decide.
 
 ## Creating and shaping a release
 
@@ -153,18 +129,3 @@ Maintainer. Tags and closes it.
 <ParamField path="DELETE /v1/releases/{id}" type="endpoint" />
 
 Maintainer. `204`.
-
-## The inbox, cleared
-
-<ParamField path="POST /v1/inbox/{itemId}/adopt" type="endpoint" />
-
-Take a branch somebody cut in a terminal and make it the card's.
-
-<ParamField query="card" type="integer">
-  Which card. Optional — the Inbox already guessed from the naming
-  convention, and this is how you overrule the guess.
-</ParamField>
-
-<ParamField path="DELETE /v1/inbox/{itemId}" type="endpoint" />
-
-Put the item away without acting on it. Both answer `204`.

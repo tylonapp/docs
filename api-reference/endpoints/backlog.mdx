@@ -1,0 +1,25 @@
+---
+title: "Backlog"
+sidebarTitle: "Backlog"
+description: "Read the Tylon backlog — the drafts behind a board, which have no branch and touch no Git."
+---
+
+Drafts. A title, a description, a discussion, and no Git at all — nothing
+here has a branch, because starting a card is the deliberate act that cuts
+one.
+
+It is a list rather than a column, and it grows without bound: reorder it,
+search it, pick from it.
+
+## Reading it
+
+<ParamField path="GET /v1/backlog" type="endpoint">
+</ParamField>
+
+Drafts: a title, a description, a discussion, and no Git at all. Nothing here has a branch, because starting a card is the deliberate act that cuts one.
+
+<ParamField query="projectId" type="string">
+  Same rule as the board.
+</ParamField>
+
+Answers with an array of cards in the same shape `/v1/cards/{number}` uses.

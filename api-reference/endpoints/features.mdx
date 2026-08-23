@@ -1,0 +1,39 @@
+---
+title: "Features"
+sidebarTitle: "Features"
+description: "Read and write Tylon features — the grouping that follows one thing being built across many cards."
+---
+
+A feature groups the cards that deliver one thing across time.
+
+## Reading and writing them
+
+Member. A feature groups cards that deliver one thing across time.
+
+<ParamField path="POST /v1/features" type="endpoint" />
+
+<ParamField body="name" type="string" required>
+  Up to 60 characters.
+</ParamField>
+<ParamField body="description" type="string" />
+<ParamField body="color" type="string" />
+
+```json
+{
+  "id": "84842202542510070",
+  "name": "Key rotation",
+  "description": "",
+  "color": "blue",
+  "taskCount": 0,
+  "doneCount": 0,
+  "archived": false,
+  "position": 0
+}
+```
+
+`doneCount` against `taskCount` is the reading worth putting on a dashboard:
+it counts cards that actually reached the end of the flow, not cards somebody
+ticked.
+
+<ParamField path="PATCH /v1/features/{featureId}" type="endpoint" />
+<ParamField path="DELETE /v1/features/{featureId}" type="endpoint" />
