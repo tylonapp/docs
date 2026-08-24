@@ -15,7 +15,7 @@ Every page, as a summary — title, slug, `parentId`, position. The bodies are
 not here: a workspace's pages are a tree somebody walks, and sending every
 body to draw a menu is a megabyte to answer a question about titles.
 
-<ParamField path="GET /v1/docs/{slug}" type="endpoint" />
+<ParamField path="GET /v1/docs/{docId}" type="endpoint" />
 
 One page, with its body, what links to it, what it points at that nobody has
 written, and the cards that carry it.
@@ -31,8 +31,9 @@ written, and the cards that carry it.
 }
 ```
 
-A slug nobody has written is `404`. `dangling` is the other half of that: the
-links this page makes to pages that do not exist yet.
+An id nobody has written is `404`. `dangling` is the other half of that: the
+links this page makes to pages that do not exist yet — those are named by slug,
+because that is what a `[[wiki link]]` in a body carries.
 
 ## Writing them
 
@@ -68,11 +69,15 @@ shape of a migration, what not to touch.
 }
 ```
 
-<ParamField path="PATCH /v1/docs/{slug}" type="endpoint" />
-<ParamField path="DELETE /v1/docs/{slug}" type="endpoint" />
+<ParamField path="PATCH /v1/docs/{docId}" type="endpoint" />
+<ParamField path="DELETE /v1/docs/{docId}" type="endpoint" />
 
-Addressed by slug rather than id, because that is what a link in another page
-carries.
+<Warning>
+  **By id, not by slug.** A page's slug is derived from its title and follows
+  it, and `PATCH` with a new `title` is exactly what moves it — so an address
+  that a successful write moves out from under the caller is not an address.
+  A slug where an id belongs is `400`, the same as everywhere else here.
+</Warning>
 
 <Note>
   This is the one place on the write API where automating is obviously right:

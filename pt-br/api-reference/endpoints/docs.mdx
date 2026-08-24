@@ -16,7 +16,7 @@ não vêm: as páginas de um workspace são uma árvore por onde alguém anda, e
 mandar todo corpo para desenhar um menu é um megabyte para responder uma
 pergunta sobre títulos.
 
-<ParamField path="GET /v1/docs/{slug}" type="endpoint" />
+<ParamField path="GET /v1/docs/{docId}" type="endpoint" />
 
 Uma página, com o corpo dela, o que aponta para ela, o que ela cita e ninguém
 escreveu, e os cards que a carregam.
@@ -32,8 +32,9 @@ escreveu, e os cards que a carregam.
 }
 ```
 
-Um slug que ninguém escreveu é `404`. `dangling` é a outra metade disso: os
-links que esta página faz para páginas que ainda não existem.
+Um id que ninguém escreveu é `404`. `dangling` é a outra metade disso: os
+links que esta página faz para páginas que ainda não existem — esses vêm por
+slug, porque é isso que um `[[wiki link]]` no corpo carrega.
 
 ## Como escrever
 
@@ -69,11 +70,15 @@ convenções, o formato de uma migration, no que não mexer.
 }
 ```
 
-<ParamField path="PATCH /v1/docs/{slug}" type="endpoint" />
-<ParamField path="DELETE /v1/docs/{slug}" type="endpoint" />
+<ParamField path="PATCH /v1/docs/{docId}" type="endpoint" />
+<ParamField path="DELETE /v1/docs/{docId}" type="endpoint" />
 
-Endereçadas por slug e não por id, porque é isso que um link em outra página
-carrega.
+<Warning>
+  **Por id, não por slug.** O slug de uma página é derivado do título e o
+  acompanha, e um `PATCH` com um `title` novo é justamente o que o move — um
+  endereço que uma escrita bem-sucedida tira de baixo de quem chamou não é um
+  endereço. Slug onde vai id é `400`, igual em todo o resto daqui.
+</Warning>
 
 <Note>
   Este é o único lugar da API de escrita em que automatizar é obviamente
